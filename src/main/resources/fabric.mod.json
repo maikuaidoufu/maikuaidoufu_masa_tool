@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "maikuaidoufu_masa_tool",
+  "version": "${version}",
+  "name": "Doufu's Masa Tool",
+  "description": "A small Masa-style toolbox. First feature: region-scoped observer suppression with server-synced groups and sub-regions. Client-side UI uses MaLiLib; Litematica is optional.",
+  "authors": [
+    "Doufu"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "cn.maikuaidoufu.MasaToolMod"
+    ],
+    "client": [
+      "cn.maikuaidoufu.client.MasaToolClient"
+    ]
+  },
+  "mixins": [
+    "maikuaidoufu_masa_tool.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.1",
+    "fabric-api-base": ">=2.0.3",
+    "fabric-lifecycle-events-v1": ">=4.1.1",
+    "fabric-networking-api-v1": ">=6.3.2"
+  },
+  "recommends": {
+    "malilib": ">=0.28.12",
+    "litematica": ">=0.27.14"
+  },
+  "suggests": {
+    "syncmatica": "*"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "cn.maikuaidoufu.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "minVersion": "0.8",
+  "mixins": [
+    "ObserverBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
