@@ -6,4 +6,10 @@ For setup instructions, please see the [Fabric Documentation page](https://docs.
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+MIT — see [LICENSE](LICENSE).
+
+The jars under `libs/` are third-party dependencies and keep their own licenses:
+
+- `malilib` 0.28.12 by masa — LGPLv3
+- `litematica` 0.27.14 by masa — LGPLv3
+
