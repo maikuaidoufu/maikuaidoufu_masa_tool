@@ -4,23 +4,24 @@ import cn.maikuaidoufu.client.ClientActions;
 import cn.maikuaidoufu.client.compat.LitematicaSupport;
 import cn.maikuaidoufu.client.compat.PlacementInfo;
 import cn.maikuaidoufu.net.EntryDraft;
+import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.gui.screens.Screen;
 
 public final class GuiPlacementPicker
     extends GuiListBase<PlacementInfo, WidgetPlacementEntry, WidgetPlacementList>
     implements ISelectionListener<PlacementInfo>
 {
-    private final GuiImportSource parent;
     private final List<PlacementInfo> placements;
 
-    public GuiPlacementPicker(GuiImportSource parent)
+    public GuiPlacementPicker(Screen parent)
     {
         super(12, 64);
-        this.parent = parent;
         this.placements = LitematicaSupport.placements();
         setParent(parent);
         setTitle(StringUtils.translate("maikuaidoufu_masa_tool.title.pick_placement"));
@@ -66,6 +67,18 @@ public final class GuiPlacementPicker
     {
     }
 
+    @Override
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    {
+        super.drawContents(ctx, mouseX, mouseY, partialTicks);
+
+        if (this.placements.isEmpty())
+        {
+            String empty = StringUtils.translate("maikuaidoufu_masa_tool.hover.no_placements");
+            drawString(ctx, empty, getScreenWidth() / 2 - getStringWidth(empty) / 2, getScreenHeight() / 2, 0xFFAAAAAA);
+        }
+    }
+
     public void select(PlacementInfo placement)
     {
         if (placement == null || placement.boxes().isEmpty())
@@ -87,6 +100,6 @@ public final class GuiPlacementPicker
         String source = StringUtils.translate("maikuaidoufu_masa_tool.source.projection",
             placement.source(), placement.name());
         ClientActions.createGroup(groupName, source, drafts);
-        fi.dy.masa.malilib.gui.GuiBase.openGui(new GuiGroupList());
+        GuiBase.openGui(new GuiGroupList());
     }
 }

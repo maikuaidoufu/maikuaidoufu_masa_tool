@@ -63,7 +63,7 @@ public final class GuiGroupList
             : !ClientGroupStore.isConnected()
                 ? StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected")
                 : !permitted ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission") : "");
-        addButton(importButton, (button, mouseButton) -> GuiBase.openGui(new GuiImportSource(this)));
+        addButton(importButton, (button, mouseButton) -> GuiBase.openGui(new GuiPlacementPicker(this)));
         right -= importWidth + 4;
 
         ButtonOnOff highlight = new ButtonOnOff(right, 26, -1, false,

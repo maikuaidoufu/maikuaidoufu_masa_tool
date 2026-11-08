@@ -3,7 +3,6 @@
   "maikuaidoufu_masa_tool.tab.hotkeys": "Hotkeys",
   "maikuaidoufu_masa_tool.tab.regions": "Observer Suppression",
   "maikuaidoufu_masa_tool.title.hotkeys": "Hotkeys",
-  "maikuaidoufu_masa_tool.title.import": "Import from Litematica",
   "maikuaidoufu_masa_tool.title.pick_placement": "Choose a Placement",
   "maikuaidoufu_masa_tool.title.create_entry": "Create Sub-region",
   "maikuaidoufu_masa_tool.title.rename": "Rename Group",
@@ -11,7 +10,6 @@
   "maikuaidoufu_masa_tool.group.default": "Default Group",
   "maikuaidoufu_masa_tool.default_entry_name": "New Region",
   "maikuaidoufu_masa_tool.source.manual": "Source: Manual",
-  "maikuaidoufu_masa_tool.source.selection": "Selection: %s",
   "maikuaidoufu_masa_tool.source.projection": "Projection (%s): %s",
   "maikuaidoufu_masa_tool.source.shared": "Shared",
   "maikuaidoufu_masa_tool.source.local": "Local",
@@ -30,9 +28,9 @@
   "maikuaidoufu_masa_tool.name.imported": "Imported",
 
   "maikuaidoufu_masa_tool.button.import": "Import from Litematica...",
-  "maikuaidoufu_masa_tool.button.import_placement": "Import a placed projection",
   "maikuaidoufu_masa_tool.button.import_selection": "Import current selection",
   "maikuaidoufu_masa_tool.button.import_selected": "Import",
+  "maikuaidoufu_masa_tool.button.manual_entry": "Manual input",
   "maikuaidoufu_masa_tool.button.configure": "Configure",
   "maikuaidoufu_masa_tool.button.switch": "Switch: %s",
   "maikuaidoufu_masa_tool.button.highlight": "Highlight: %s",
@@ -71,8 +69,7 @@
   "maikuaidoufu_masa_tool.dimension.nether": "Nether",
   "maikuaidoufu_masa_tool.dimension.end": "End",
 
-  "maikuaidoufu_masa_tool.import.available": "Placed projections: %s; selection regions: %s",
-  "maikuaidoufu_masa_tool.config.open_gui": "Open GUI",
+  "maikuaidoufu_masa_tool.config.name.open_gui": "Open GUI",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§cYou do not have permission to do that.",
   "maikuaidoufu_masa_tool.message.invalid_region": "§cInvalid region coordinates or name.",

@@ -19,6 +19,8 @@ public final class GuiCreateEntry extends GuiBase
 {
     private final UUID groupId;
     private final Screen parent;
+    private final Box presetBox;
+    private final String presetName;
 
     private GuiTextFieldGeneric nameField;
     private GuiTextFieldInteger x1;
@@ -30,8 +32,15 @@ public final class GuiCreateEntry extends GuiBase
 
     public GuiCreateEntry(UUID groupId, Screen parent)
     {
+        this(groupId, parent, null, null);
+    }
+
+    public GuiCreateEntry(UUID groupId, Screen parent, Box presetBox, String presetName)
+    {
         this.groupId = groupId;
         this.parent = parent;
+        this.presetBox = presetBox;
+        this.presetName = presetName;
         setParent(parent);
         setTitle(StringUtils.translate("maikuaidoufu_masa_tool.title.create_entry"));
     }
@@ -50,18 +59,33 @@ public final class GuiCreateEntry extends GuiBase
         }
 
         BlockPos pos = currentPos();
+        int corner1X = this.presetBox != null ? this.presetBox.minX() : pos.getX();
+        int corner1Y = this.presetBox != null ? this.presetBox.minY() : pos.getY();
+        int corner1Z = this.presetBox != null ? this.presetBox.minZ() : pos.getZ();
+        int corner2X = this.presetBox != null ? this.presetBox.maxX() : pos.getX() + 1;
+        int corner2Y = this.presetBox != null ? this.presetBox.maxY() : pos.getY() + 1;
+        int corner2Z = this.presetBox != null ? this.presetBox.maxZ() : pos.getZ() + 1;
+
+        String name = this.presetName == null || this.presetName.isBlank()
+            ? StringUtils.translate("maikuaidoufu_masa_tool.default_entry_name")
+            : this.presetName;
+
+        if (name.length() > 64)
+        {
+            name = name.substring(0, 64);
+        }
 
         this.nameField = new GuiTextFieldGeneric(110, 55, 260, 20, this.font);
-        this.nameField.setValue(StringUtils.translate("maikuaidoufu_masa_tool.default_entry_name"));
         this.nameField.setMaxLengthWrapper(64);
+        this.nameField.setValue(name);
         addTextField(this.nameField, field -> true);
 
-        this.x1 = createIntegerField(110, 85, pos.getX());
-        this.y1 = createIntegerField(185, 85, pos.getY());
-        this.z1 = createIntegerField(260, 85, pos.getZ());
-        this.x2 = createIntegerField(110, 115, pos.getX() + 1);
-        this.y2 = createIntegerField(185, 115, pos.getY() + 1);
-        this.z2 = createIntegerField(260, 115, pos.getZ() + 1);
+        this.x1 = createIntegerField(110, 85, corner1X);
+        this.y1 = createIntegerField(185, 85, corner1Y);
+        this.z1 = createIntegerField(260, 85, corner1Z);
+        this.x2 = createIntegerField(110, 115, corner2X);
+        this.y2 = createIntegerField(185, 115, corner2Y);
+        this.z2 = createIntegerField(260, 115, corner2Z);
 
         ButtonGeneric here1 = new ButtonGeneric(340, 85, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.current_pos"));

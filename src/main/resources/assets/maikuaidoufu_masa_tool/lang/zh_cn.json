@@ -3,7 +3,6 @@
   "maikuaidoufu_masa_tool.tab.hotkeys": "热键",
   "maikuaidoufu_masa_tool.tab.regions": "区域侦测器禁用",
   "maikuaidoufu_masa_tool.title.hotkeys": "热键",
-  "maikuaidoufu_masa_tool.title.import": "从投影导入",
   "maikuaidoufu_masa_tool.title.pick_placement": "选择已放置的投影",
   "maikuaidoufu_masa_tool.title.create_entry": "新建区域",
   "maikuaidoufu_masa_tool.title.rename": "重命名分组",
@@ -11,7 +10,6 @@
   "maikuaidoufu_masa_tool.group.default": "默认分组",
   "maikuaidoufu_masa_tool.default_entry_name": "新区域",
   "maikuaidoufu_masa_tool.source.manual": "来源：手动",
-  "maikuaidoufu_masa_tool.source.selection": "选区：%s",
   "maikuaidoufu_masa_tool.source.projection": "投影（%s）：%s",
   "maikuaidoufu_masa_tool.source.shared": "共享",
   "maikuaidoufu_masa_tool.source.local": "本地",
@@ -30,9 +28,9 @@
   "maikuaidoufu_masa_tool.name.imported": "导入",
 
   "maikuaidoufu_masa_tool.button.import": "从投影导入...",
-  "maikuaidoufu_masa_tool.button.import_placement": "从已放置的投影导入",
   "maikuaidoufu_masa_tool.button.import_selection": "从当前选区导入",
   "maikuaidoufu_masa_tool.button.import_selected": "导入",
+  "maikuaidoufu_masa_tool.button.manual_entry": "手动输入",
   "maikuaidoufu_masa_tool.button.configure": "配置",
   "maikuaidoufu_masa_tool.button.switch": "开关: %s",
   "maikuaidoufu_masa_tool.button.highlight": "高亮: %s",
@@ -71,8 +69,7 @@
   "maikuaidoufu_masa_tool.dimension.nether": "下界",
   "maikuaidoufu_masa_tool.dimension.end": "末地",
 
-  "maikuaidoufu_masa_tool.import.available": "已放置投影 %s 个；当前选区 %s 个区域",
-  "maikuaidoufu_masa_tool.config.open_gui": "打开界面",
+  "maikuaidoufu_masa_tool.config.name.open_gui": "打开界面",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§c你没有权限执行这个操作。",
   "maikuaidoufu_masa_tool.message.invalid_region": "§c区域坐标或名称无效。",
