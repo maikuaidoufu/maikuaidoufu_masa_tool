@@ -28,15 +28,15 @@ public final class RegionNetworking
 
     public static void registerPayloads()
     {
-        PayloadTypeRegistry.serverboundPlay().registerLarge(CreateGroupPayload.TYPE, CreateGroupPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
-        PayloadTypeRegistry.serverboundPlay().registerLarge(CreateEntryPayload.TYPE, CreateEntryPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
-        PayloadTypeRegistry.serverboundPlay().registerLarge(GroupControlPayload.TYPE, GroupControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
-        PayloadTypeRegistry.serverboundPlay().registerLarge(EntryControlPayload.TYPE, EntryControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
-        PayloadTypeRegistry.serverboundPlay().register(RequestSnapshotPayload.TYPE, RequestSnapshotPayload.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(PortalTogglePayload.TYPE, PortalTogglePayload.CODEC);
+        PayloadTypeRegistry.playC2S().registerLarge(CreateGroupPayload.TYPE, CreateGroupPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.playC2S().registerLarge(CreateEntryPayload.TYPE, CreateEntryPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.playC2S().registerLarge(GroupControlPayload.TYPE, GroupControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.playC2S().registerLarge(EntryControlPayload.TYPE, EntryControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.playC2S().register(RequestSnapshotPayload.TYPE, RequestSnapshotPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(PortalTogglePayload.TYPE, PortalTogglePayload.CODEC);
 
-        PayloadTypeRegistry.clientboundPlay().registerLarge(GroupListPayload.TYPE, GroupListPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
-        PayloadTypeRegistry.clientboundPlay().register(PortalEventPayload.TYPE, PortalEventPayload.CODEC);
+        PayloadTypeRegistry.playS2C().registerLarge(GroupListPayload.TYPE, GroupListPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.playS2C().register(PortalEventPayload.TYPE, PortalEventPayload.CODEC);
     }
 
     public static void registerServerHandlers()
@@ -333,3 +333,4 @@ public final class RegionNetworking
         }
     }
 }
+

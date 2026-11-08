@@ -22,14 +22,14 @@
   ],
   "depends": {
     "fabricloader": ">=0.19.5",
-    "minecraft": "~26.1",
-    "fabric-api-base": ">=2.0.3",
-    "fabric-lifecycle-events-v1": ">=4.1.1",
-    "fabric-networking-api-v1": ">=6.3.2"
+    "minecraft": "~1.21.11",
+    "fabric-api-base": ">=1.0.5",
+    "fabric-lifecycle-events-v1": ">=2.6.15",
+    "fabric-networking-api-v1": ">=5.1.6"
   },
   "recommends": {
-    "malilib": ">=0.28.12",
-    "litematica": ">=0.27.14"
+    "malilib": ">=0.27.20",
+    "litematica": ">=0.26.16"
   },
   "suggests": {
     "syncmatica": "*"

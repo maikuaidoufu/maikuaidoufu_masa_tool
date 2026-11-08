@@ -51,8 +51,8 @@ public final class MasaToolClientImpl
 
             if (mc.player != null)
             {
-                mc.player.sendSystemMessage(
-                    Component.translatable("maikuaidoufu_masa_tool.message.protocol_mismatch"));
+                mc.player.displayClientMessage(
+                    Component.translatable("maikuaidoufu_masa_tool.message.protocol_mismatch"), false);
             }
 
             return;

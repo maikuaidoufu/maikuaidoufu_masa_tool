@@ -168,7 +168,7 @@ public final class ClientActions
 
         if (mc.player != null)
         {
-            mc.player.sendSystemMessage(Component.translatable(messageKey));
+            mc.player.displayClientMessage(Component.translatable(messageKey), false);
         }
 
         return false;

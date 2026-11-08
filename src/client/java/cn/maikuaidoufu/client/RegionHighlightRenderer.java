@@ -4,19 +4,17 @@ import cn.maikuaidoufu.MasaToolMod;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionEntry;
 import cn.maikuaidoufu.region.RegionGroup;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.joml.Matrix4fc;
-import org.joml.Vector4f;
+import org.joml.Matrix4f;
 
 public final class RegionHighlightRenderer implements IRenderer
 {
@@ -24,9 +22,9 @@ public final class RegionHighlightRenderer implements IRenderer
     private static boolean loggedError;
 
     @Override
-    public void onRenderWorldLast(RenderTarget target, Matrix4fc matrix, CameraRenderState cameraState,
-                                  Frustum frustum, RenderBuffers buffers, GpuBufferSlice bufferSlice,
-                                  Vector4f fogColor, ProfilerFiller profiler)
+    public void onRenderWorldLastAdvanced(RenderTarget target, Matrix4f matrix, Matrix4f projectionMatrix,
+                                          Frustum frustum, Camera camera, RenderBuffers buffers,
+                                          ProfilerFiller profiler)
     {
         Minecraft mc = Minecraft.getInstance();
 
