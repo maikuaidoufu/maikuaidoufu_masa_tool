@@ -8,6 +8,7 @@ import cn.maikuaidoufu.net.GroupControlPayload;
 import cn.maikuaidoufu.net.RequestSnapshotPayload;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionGroup;
+import fi.dy.masa.malilib.util.StringUtils;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -104,7 +105,9 @@ public final class ClientActions
 
     public static String uniqueGroupName(String base)
     {
-        String name = base == null || base.isBlank() ? "Imported" : base.trim();
+        String name = base == null || base.isBlank()
+            ? StringUtils.translate("maikuaidoufu_masa_tool.name.imported")
+            : base.trim();
 
         if (!nameExists(name))
         {

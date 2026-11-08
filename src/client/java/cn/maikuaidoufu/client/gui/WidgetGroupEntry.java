@@ -46,7 +46,7 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
         ButtonGeneric delete = new HintButton(right, buttonY, -1, 20, deleteLabel);
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canDelete);
-        delete.setHoverStrings(canDelete ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(delete, canDelete ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(delete, (button, mouseButton) -> confirmDelete());
         right = delete.getX() - 2;
 
@@ -61,15 +61,15 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
 
         boolean canMaster = ClientGroupStore.canEditGroup(group);
         ButtonOnOff master = new HintOnOff(right, buttonY, -1, true,
-            "maikuaidoufu_masa_tool.button.master", group.enabled());
+            "maikuaidoufu_masa_tool.button.switch", group.enabled());
         master.setEnabled(canMaster);
-        master.setHoverStrings(canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(master, canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(master, (button, mouseButton) ->
             ClientActions.setGroupEnabled(this.group.id(), !this.group.enabled()));
         right = master.getX() - 2;
 
         ButtonGeneric enter = new ButtonGeneric(right, buttonY, -1, 20,
-            StringUtils.translate("maikuaidoufu_masa_tool.button.enter"));
+            StringUtils.translate("maikuaidoufu_masa_tool.button.configure"));
         enter.setX(right - enter.getWidth());
         addButton(enter, (button, mouseButton) ->
             GuiBase.openGui(new GuiGroupDetail(this.group.id(), this.parent.getParentGui())));

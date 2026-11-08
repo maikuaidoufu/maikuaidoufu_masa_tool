@@ -24,7 +24,7 @@ public final class WidgetPlacementEntry extends WidgetListEntryBase<PlacementInf
         this.isOdd = isOdd;
 
         ButtonGeneric select = new ButtonGeneric(x + width - 2, y + 2, -1, 20,
-            StringUtils.translate("maikuaidoufu_masa_tool.button.select"));
+            StringUtils.translate("maikuaidoufu_masa_tool.button.import_selected"));
         select.setX(x + width - 2 - select.getWidth());
         addButton(select, (button, mouseButton) -> this.parent.getParentGui().select(this.placement));
         this.buttonsStartX = select.getX() - 4;

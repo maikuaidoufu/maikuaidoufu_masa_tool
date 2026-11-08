@@ -41,7 +41,7 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
             StringUtils.translate("maikuaidoufu_masa_tool.button.delete"));
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canEdit);
-        delete.setHoverStrings(canEdit ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(delete, canEdit ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(delete, (button, mouseButton) -> confirmDelete());
         right = delete.getX() - 2;
 
@@ -57,7 +57,7 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         ButtonOnOff enabled = new HintOnOff(right, buttonY, -1, true,
             "maikuaidoufu_masa_tool.button.enabled", entry.enabled());
         enabled.setEnabled(canEdit);
-        enabled.setHoverStrings(!canEdit
+        GuiHints.set(enabled, !canEdit
             ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission")
             : this.group != null && !this.group.enabled()
                 ? StringUtils.translate("maikuaidoufu_masa_tool.hover.group_disabled")

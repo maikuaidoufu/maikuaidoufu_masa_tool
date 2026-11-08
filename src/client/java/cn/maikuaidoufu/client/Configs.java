@@ -31,7 +31,8 @@ public final class Configs implements IConfigHandler
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = MasaToolMod.MOD_ID + ".json";
 
-    public static final ConfigHotkey OPEN_GUI = new ConfigHotkey("openGui", "X,D");
+    public static final ConfigHotkey OPEN_GUI =
+        new ConfigHotkey("openGui", "X,D", "", "maikuaidoufu_masa_tool.config.open_gui");
     public static final ConfigBoolean RENDER_HIGHLIGHTS = new ConfigBoolean("renderHighlights", true);
 
     public static final List<IConfigBase> OPTIONS = List.of(RENDER_HIGHLIGHTS);

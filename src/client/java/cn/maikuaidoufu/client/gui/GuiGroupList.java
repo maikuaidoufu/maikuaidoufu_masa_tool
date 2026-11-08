@@ -1,14 +1,15 @@
 package cn.maikuaidoufu.client.gui;
 
 import cn.maikuaidoufu.client.ClientGroupStore;
+import cn.maikuaidoufu.client.Configs;
 import cn.maikuaidoufu.client.GroupStoreListener;
 import cn.maikuaidoufu.client.compat.LitematicaSupport;
 import cn.maikuaidoufu.region.RegionGroup;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
+import fi.dy.masa.malilib.gui.button.ButtonOnOff;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -41,26 +42,39 @@ public final class GuiGroupList
         clearWidgets();
         clearButtons();
         GuiTabs.add(this, GuiTabs.Tab.GROUPS, 26);
-        createImportButton();
+        createTopButtons();
         setListPosition(12, 64);
         reCreateListWidget();
         getListWidget().refreshEntries();
     }
 
-    private void createImportButton()
+    private void createTopButtons()
     {
-        String label = StringUtils.translate("maikuaidoufu_masa_tool.button.import");
-        int width = getStringWidth(label) + 20;
-        ButtonGeneric button = new HintButton(getScreenWidth() - width - 10, 26, width, 20, label);
+        int right = getScreenWidth() - 10;
+
+        String importLabel = StringUtils.translate("maikuaidoufu_masa_tool.button.import");
+        int importWidth = getStringWidth(importLabel) + 20;
+        ButtonGeneric importButton = new HintButton(right - importWidth, 26, importWidth, 20, importLabel);
         boolean available = LitematicaSupport.isAvailable();
         boolean permitted = ClientGroupStore.canCreate();
-        button.setEnabled(available && permitted);
-        button.setHoverStrings(!available
+        importButton.setEnabled(available && permitted);
+        GuiHints.set(importButton, !available
             ? StringUtils.translate("maikuaidoufu_masa_tool.hover.need_litematica")
             : !ClientGroupStore.isConnected()
                 ? StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected")
                 : !permitted ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission") : "");
-        addButton(button, (b, mouseButton) -> GuiBase.openGui(new GuiImportSource(this)));
+        addButton(importButton, (button, mouseButton) -> GuiBase.openGui(new GuiImportSource(this)));
+        right -= importWidth + 4;
+
+        ButtonOnOff highlight = new ButtonOnOff(right, 26, -1, false,
+            "maikuaidoufu_masa_tool.button.render_highlights", Configs.RENDER_HIGHLIGHTS.getBooleanValue());
+        highlight.setX(right - highlight.getWidth());
+        addButton(highlight, (button, mouseButton) ->
+        {
+            Configs.RENDER_HIGHLIGHTS.setBooleanValue(!Configs.RENDER_HIGHLIGHTS.getBooleanValue());
+            Configs.saveConfig();
+            initGui();
+        });
     }
 
     @Override

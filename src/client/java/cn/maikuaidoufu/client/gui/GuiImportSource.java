@@ -41,7 +41,7 @@ public final class GuiImportSource extends GuiBase
         ButtonGeneric fromPlacement = new HintButton(x, y, width, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.import_placement"));
         fromPlacement.setEnabled(!this.placements.isEmpty());
-        fromPlacement.setHoverStrings(this.placements.isEmpty()
+        GuiHints.set(fromPlacement, this.placements.isEmpty()
             ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_placements") : "");
         addButton(fromPlacement, (button, mouseButton) ->
             GuiBase.openGui(new GuiPlacementPicker(this)));
@@ -50,7 +50,7 @@ public final class GuiImportSource extends GuiBase
         ButtonGeneric fromSelection = new HintButton(x, y, width, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.import_selection"));
         fromSelection.setEnabled(this.selection != null);
-        fromSelection.setHoverStrings(this.selection == null
+        GuiHints.set(fromSelection, this.selection == null
             ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_selection") : "");
         addButton(fromSelection, (button, mouseButton) -> importSelection());
         y += 34;

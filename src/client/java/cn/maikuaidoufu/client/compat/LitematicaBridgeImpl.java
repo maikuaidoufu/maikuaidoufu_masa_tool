@@ -9,6 +9,7 @@ import fi.dy.masa.litematica.schematic.placement.SubRegionPlacement;
 import fi.dy.masa.litematica.selection.AreaSelection;
 import fi.dy.masa.litematica.selection.AreaSelectionSimple;
 import fi.dy.masa.litematica.selection.SelectionManager;
+import fi.dy.masa.malilib.util.StringUtils;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,7 +83,7 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
             if (enclosing != null)
             {
                 boxes.add(enclosing);
-                names.add("区域");
+                names.add(StringUtils.translate("maikuaidoufu_masa_tool.name.area"));
             }
         }
 
@@ -91,7 +92,9 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
             return null;
         }
 
-        String source = SyncmaticaSupport.isShared(placement) ? "共享" : "本地";
+        String source = SyncmaticaSupport.isShared(placement)
+            ? StringUtils.translate("maikuaidoufu_masa_tool.source.shared")
+            : StringUtils.translate("maikuaidoufu_masa_tool.source.local");
         return new PlacementInfo(placementName(placement), source, dimension, boxes, names);
     }
 
@@ -147,7 +150,7 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
                 if (box != null)
                 {
                     boxes.add(box);
-                    names.add("选区 " + index++);
+                    names.add(StringUtils.translate("maikuaidoufu_masa_tool.name.selection_index", index++));
                 }
             }
         }
@@ -161,10 +164,11 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
 
         if (name == null || name.isBlank())
         {
-            name = "选区";
+            name = StringUtils.translate("maikuaidoufu_masa_tool.name.selection");
         }
 
-        return new SelectionInfo(name, "选区", currentDimension(), boxes, names);
+        return new SelectionInfo(name, StringUtils.translate("maikuaidoufu_masa_tool.name.selection"),
+            currentDimension(), boxes, names);
     }
 
     /**
@@ -222,7 +226,8 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
         }
 
         String name = placement.getName();
-        return name == null || name.isBlank() ? "投影" : name;
+        return name == null || name.isBlank()
+            ? StringUtils.translate("maikuaidoufu_masa_tool.name.projection") : name;
     }
 
     private static String currentDimension()

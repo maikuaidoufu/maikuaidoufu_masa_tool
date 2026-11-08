@@ -8,8 +8,8 @@ public final class GuiTabs
 {
     public enum Tab
     {
-        GROUPS,
-        GENERAL
+        HOTKEYS,
+        GROUPS
     }
 
     private GuiTabs()
@@ -33,13 +33,13 @@ public final class GuiTabs
 
     public static String label(Tab tab)
     {
-        return StringUtils.translate(tab == Tab.GROUPS
-            ? "maikuaidoufu_masa_tool.tab.regions"
-            : "maikuaidoufu_masa_tool.tab.general");
+        return StringUtils.translate(tab == Tab.HOTKEYS
+            ? "maikuaidoufu_masa_tool.tab.hotkeys"
+            : "maikuaidoufu_masa_tool.tab.regions");
     }
 
     private static void open(Tab tab)
     {
-        GuiBase.openGui(tab == Tab.GROUPS ? new GuiGroupList() : new GuiGeneral());
+        GuiBase.openGui(tab == Tab.GROUPS ? new GuiGroupList() : new GuiHotkeys());
     }
 }

@@ -26,7 +26,7 @@ public final class GuiGroupDetail
 
     public GuiGroupDetail(UUID groupId, Screen parent)
     {
-        super(12, 90);
+        super(12, 64);
         this.groupId = groupId;
         this.parent = parent;
         setParent(parent);
@@ -57,7 +57,7 @@ public final class GuiGroupDetail
     @Override
     protected int getBrowserHeight()
     {
-        return getScreenHeight() - 114;
+        return getScreenHeight() - 88;
     }
 
     @Override
@@ -77,16 +77,15 @@ public final class GuiGroupDetail
         setTitle(group.defaultGroup()
             ? StringUtils.translate("maikuaidoufu_masa_tool.group.default")
             : group.name());
-        GuiTabs.add(this, GuiTabs.Tab.GROUPS, 26);
         createHeader(group);
-        setListPosition(12, 90);
+        setListPosition(12, 64);
         reCreateListWidget();
         getListWidget().refreshEntries();
     }
 
     private void createHeader(RegionGroup group)
     {
-        int y = 52;
+        int y = 26;
         int x = 12;
 
         ButtonGeneric back = new ButtonGeneric(x, y, -1, 20,
@@ -107,9 +106,9 @@ public final class GuiGroupDetail
 
         boolean canMaster = ClientGroupStore.canEditGroup(group);
         ButtonOnOff master = new HintOnOff(x, y, -1, false,
-            "maikuaidoufu_masa_tool.button.master", group.enabled());
+            "maikuaidoufu_masa_tool.button.switch", group.enabled());
         master.setEnabled(canMaster);
-        master.setHoverStrings(canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(master, canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(master, (button, mouseButton) ->
             ClientActions.setGroupEnabled(group.id(), !group.enabled()));
         x = master.getX() + master.getWidth() + 4;
@@ -130,7 +129,7 @@ public final class GuiGroupDetail
             StringUtils.translate(clear ? "maikuaidoufu_masa_tool.button.clear" : "maikuaidoufu_masa_tool.button.delete"));
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canDelete);
-        delete.setHoverStrings(canDelete ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(delete, canDelete ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(delete, (button, mouseButton) -> confirmDelete(group));
         right = delete.getX() - 3;
 
@@ -139,7 +138,7 @@ public final class GuiGroupDetail
             StringUtils.translate("maikuaidoufu_masa_tool.button.create_entry"));
         add.setX(right - add.getWidth());
         add.setEnabled(canAdd);
-        add.setHoverStrings(canAdd ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+        GuiHints.set(add, canAdd ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(add, (button, mouseButton) ->
             GuiBase.openGui(new GuiCreateEntry(group.id(), this)));
     }
@@ -194,7 +193,7 @@ public final class GuiGroupDetail
             String source = group.defaultGroup()
                 ? StringUtils.translate("maikuaidoufu_masa_tool.source.manual")
                 : StringUtils.translate("maikuaidoufu_masa_tool.label.source", group.source());
-            drawString(ctx, source, 12, 76, 0xFF999999);
+            drawString(ctx, source, 12, 50, 0xFF999999);
         }
     }
 
