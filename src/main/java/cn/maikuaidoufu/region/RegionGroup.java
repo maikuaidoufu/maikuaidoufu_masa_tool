@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A group is the outer object: either the permanent default group or a group
- * imported from one Litematica placement / selection. Entries are independent
- * sub-regions with their own enable state.
+ * A group of sub-regions: either the default group or one imported from
+ * Litematica.
  */
 public record RegionGroup(
     UUID id,

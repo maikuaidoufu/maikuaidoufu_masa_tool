@@ -16,8 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.LevelReader;
 
 /**
- * Server-authoritative group table. Reads use an immutable, enabled-only index
- * so the observer mixin never has to walk disabled groups or lock.
+ * Holds the group tree on the server and answers the observer check.
  */
 public final class RegionManager
 {

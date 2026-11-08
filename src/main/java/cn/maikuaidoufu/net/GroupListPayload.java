@@ -12,8 +12,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 /**
- * Full server-authoritative group list. Sent on join, on request, and after
- * every mutation. Permission flags are per recipient.
+ * The complete group list sent to one client, with that client's permission
+ * flags.
  */
 public record GroupListPayload(
     int protocolVersion,

@@ -36,6 +36,8 @@ public final class MasaToolClientImpl
     {
         if (payload.protocolVersion() != cn.maikuaidoufu.region.RegionLimits.PROTOCOL_VERSION)
         {
+            ClientGroupStore.clear();
+
             if (mc.player != null)
             {
                 mc.player.sendSystemMessage(

@@ -3,7 +3,7 @@ package cn.maikuaidoufu.region;
 import net.minecraft.core.BlockPos;
 
 /**
- * An inclusive, normalized block box.
+ * Inclusive block box. The constructor normalizes the corners.
  */
 public record Box(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
 {

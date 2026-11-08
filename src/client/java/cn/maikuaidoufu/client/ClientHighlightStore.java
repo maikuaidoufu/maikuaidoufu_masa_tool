@@ -17,8 +17,7 @@ import java.util.UUID;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Client-local highlight toggles. They are deliberately not synced: every
- * player chooses which groups/sub-regions they want to see.
+ * Per-client highlight toggles, saved in the config directory.
  */
 public final class ClientHighlightStore
 {

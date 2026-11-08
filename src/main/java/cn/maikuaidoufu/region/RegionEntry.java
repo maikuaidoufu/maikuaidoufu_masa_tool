@@ -3,8 +3,7 @@ package cn.maikuaidoufu.region;
 import java.util.UUID;
 
 /**
- * One sub-region inside a group. Entry ids are stable; the owner is the player
- * that created this entry (or the group owner for imported entries).
+ * One sub-region inside a group.
  */
 public record RegionEntry(
     UUID id,

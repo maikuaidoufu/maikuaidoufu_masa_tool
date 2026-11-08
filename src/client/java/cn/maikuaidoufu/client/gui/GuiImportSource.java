@@ -17,14 +17,12 @@ import net.minecraft.client.gui.screens.Screen;
 public final class GuiImportSource extends GuiBase
 {
     private final GuiGroupList parent;
-    private final List<PlacementInfo> placements;
-    private final SelectionInfo selection;
+    private List<PlacementInfo> placements = List.of();
+    private SelectionInfo selection;
 
     public GuiImportSource(GuiGroupList parent)
     {
         this.parent = parent;
-        this.placements = LitematicaSupport.placements();
-        this.selection = LitematicaSupport.selection();
         setTitle(StringUtils.translate("maikuaidoufu_masa_tool.title.import"));
     }
 
@@ -33,11 +31,14 @@ public final class GuiImportSource extends GuiBase
     {
         super.initGui();
 
+        this.placements = LitematicaSupport.placements();
+        this.selection = LitematicaSupport.selection();
+
         int x = 30;
         int y = 55;
         int width = 300;
 
-        ButtonGeneric fromPlacement = new ButtonGeneric(x, y, width, 20,
+        ButtonGeneric fromPlacement = new HintButton(x, y, width, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.import_placement"));
         fromPlacement.setEnabled(!this.placements.isEmpty());
         fromPlacement.setHoverStrings(this.placements.isEmpty()
@@ -46,7 +47,7 @@ public final class GuiImportSource extends GuiBase
             GuiBase.openGui(new GuiPlacementPicker(this)));
         y += 26;
 
-        ButtonGeneric fromSelection = new ButtonGeneric(x, y, width, 20,
+        ButtonGeneric fromSelection = new HintButton(x, y, width, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.import_selection"));
         fromSelection.setEnabled(this.selection != null);
         fromSelection.setHoverStrings(this.selection == null

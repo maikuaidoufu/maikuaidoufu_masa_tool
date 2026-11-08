@@ -11,8 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Cancel the observer's scheduled pulse when the server-side group tree says
- * this position is inside an enabled region.
+ * Stops observer pulses while the observer sits inside an enabled region.
  */
 @Mixin(ObserverBlock.class)
 public abstract class ObserverBlockMixin

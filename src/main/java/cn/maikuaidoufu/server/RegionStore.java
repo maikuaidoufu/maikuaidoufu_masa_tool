@@ -23,7 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 /**
- * World-local persistence for the complete group tree.
+ * Reads and writes the group tree in the world folder.
  */
 public final class RegionStore
 {
@@ -33,6 +33,7 @@ public final class RegionStore
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static Path file;
+    private static boolean saveBlocked;
 
     private RegionStore()
     {
@@ -42,8 +43,10 @@ public final class RegionStore
     {
         file = server.getWorldPath(LevelResource.ROOT).resolve(DIRECTORY).resolve(FILE_NAME);
         RegionManager.clear();
+        saveBlocked = false;
 
         boolean fileExisted = Files.exists(file);
+        LoadStats stats = new LoadStats();
 
         if (fileExisted)
         {
@@ -55,7 +58,7 @@ public final class RegionStore
 
                 for (JsonElement element : groupsJson)
                 {
-                    RegionGroup group = readGroup(element);
+                    RegionGroup group = readGroup(element, stats);
 
                     if (group != null)
                     {
@@ -70,11 +73,17 @@ public final class RegionStore
             catch (Exception e)
             {
                 MasaToolMod.LOGGER.error("Failed to load region data from {}", file, e);
+                saveBlocked = !moveAside(file);
             }
         }
         else
         {
             MasaToolMod.LOGGER.info("No region data yet, creating {}", file);
+        }
+
+        if (!saveBlocked && fileExisted && stats.total() > 0)
+        {
+            backup(file);
         }
 
         boolean hadDefault = hasDefaultGroup();
@@ -83,6 +92,48 @@ public final class RegionStore
         if (!fileExisted || !hadDefault)
         {
             save();
+        }
+    }
+
+    private static boolean moveAside(Path source)
+    {
+        Path target = source.resolveSibling(FILE_NAME + ".broken-" + System.currentTimeMillis());
+
+        try
+        {
+            Files.move(source, target);
+            MasaToolMod.LOGGER.warn("Kept unreadable region data at {}", target);
+            return true;
+        }
+        catch (IOException e)
+        {
+            MasaToolMod.LOGGER.error("Could not move {} aside, saving is disabled for this session", source, e);
+            return false;
+        }
+    }
+
+    private static void backup(Path source)
+    {
+        if (!Files.exists(source))
+        {
+            return;
+        }
+
+        Path target = source.resolveSibling(FILE_NAME + ".bak");
+
+        if (Files.exists(target))
+        {
+            return;
+        }
+
+        try
+        {
+            Files.copy(source, target);
+            MasaToolMod.LOGGER.warn("Some region data could not be read; kept a copy at {}", target);
+        }
+        catch (IOException e)
+        {
+            MasaToolMod.LOGGER.error("Could not copy {} to {}", source, target, e);
         }
     }
 
@@ -101,7 +152,7 @@ public final class RegionStore
 
     public static void save()
     {
-        if (file == null)
+        if (file == null || saveBlocked)
         {
             return;
         }
@@ -183,10 +234,11 @@ public final class RegionStore
         return array;
     }
 
-    private static RegionGroup readGroup(JsonElement element)
+    private static RegionGroup readGroup(JsonElement element, LoadStats stats)
     {
         if (!element.isJsonObject())
         {
+            stats.groups++;
             return null;
         }
 
@@ -208,7 +260,7 @@ public final class RegionStore
             {
                 for (JsonElement entryElement : obj.getAsJsonArray("entries"))
                 {
-                    RegionEntry entry = readEntry(entryElement);
+                    RegionEntry entry = readEntry(entryElement, stats);
 
                     if (entry != null)
                     {
@@ -222,15 +274,17 @@ public final class RegionStore
         }
         catch (Exception e)
         {
+            stats.groups++;
             MasaToolMod.LOGGER.warn("Skipping invalid region group: {}", e.getMessage());
             return null;
         }
     }
 
-    private static RegionEntry readEntry(JsonElement element)
+    private static RegionEntry readEntry(JsonElement element, LoadStats stats)
     {
         if (!element.isJsonObject())
         {
+            stats.entries++;
             return null;
         }
 
@@ -248,6 +302,7 @@ public final class RegionStore
 
             if (box == null || !box.isValid())
             {
+                stats.entries++;
                 return null;
             }
 
@@ -255,6 +310,7 @@ public final class RegionStore
         }
         catch (Exception e)
         {
+            stats.entries++;
             MasaToolMod.LOGGER.warn("Skipping invalid region entry: {}", e.getMessage());
             return null;
         }
@@ -299,5 +355,16 @@ public final class RegionStore
             array.get(4).getAsInt(),
             array.get(5).getAsInt()
         );
+    }
+
+    private static final class LoadStats
+    {
+        private int groups;
+        private int entries;
+
+        private int total()
+        {
+            return this.groups + this.entries;
+        }
     }
 }

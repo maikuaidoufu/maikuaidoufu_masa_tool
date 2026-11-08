@@ -51,7 +51,7 @@ public final class GuiGroupList
     {
         String label = StringUtils.translate("maikuaidoufu_masa_tool.button.import");
         int width = getStringWidth(label) + 20;
-        ButtonGeneric button = new ButtonGeneric(getScreenWidth() - width - 10, 26, width, 20, label);
+        ButtonGeneric button = new HintButton(getScreenWidth() - width - 10, 26, width, 20, label);
         boolean available = LitematicaSupport.isAvailable();
         boolean permitted = ClientGroupStore.canCreate();
         button.setEnabled(available && permitted);

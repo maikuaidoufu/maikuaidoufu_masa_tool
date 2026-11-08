@@ -106,7 +106,7 @@ public final class GuiGroupDetail
         }
 
         boolean canMaster = ClientGroupStore.canEditGroup(group);
-        ButtonOnOff master = new ButtonOnOff(x, y, -1, false,
+        ButtonOnOff master = new HintOnOff(x, y, -1, false,
             "maikuaidoufu_masa_tool.button.master", group.enabled());
         master.setEnabled(canMaster);
         master.setHoverStrings(canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
@@ -126,7 +126,7 @@ public final class GuiGroupDetail
 
         boolean clear = group.defaultGroup();
         boolean canDelete = clear ? ClientGroupStore.canClearGroup(group) : ClientGroupStore.canDeleteGroup(group);
-        ButtonGeneric delete = new ButtonGeneric(right, y, -1, 20,
+        ButtonGeneric delete = new HintButton(right, y, -1, 20,
             StringUtils.translate(clear ? "maikuaidoufu_masa_tool.button.clear" : "maikuaidoufu_masa_tool.button.delete"));
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canDelete);
@@ -135,7 +135,7 @@ public final class GuiGroupDetail
         right = delete.getX() - 3;
 
         boolean canAdd = ClientGroupStore.canCreateEntry(group);
-        ButtonGeneric add = new ButtonGeneric(right, y, -1, 20,
+        ButtonGeneric add = new HintButton(right, y, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.create_entry"));
         add.setX(right - add.getWidth());
         add.setEnabled(canAdd);

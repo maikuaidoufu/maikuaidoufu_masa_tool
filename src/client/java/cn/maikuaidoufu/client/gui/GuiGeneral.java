@@ -40,7 +40,7 @@ public final class GuiGeneral extends GuiBase
 
         ButtonGeneric back = new ButtonGeneric(30, 130, 220, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.back"));
-        addButton(back, (button, mouseButton) -> this.onClose());
+        addButton(back, (button, mouseButton) -> GuiBase.openGui(new GuiGroupList()));
     }
 
     @Override

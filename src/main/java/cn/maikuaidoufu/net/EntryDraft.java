@@ -4,7 +4,7 @@ import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionLimits;
 
 /**
- * A client-created entry before the server assigns ids and ownership.
+ * A sub-region sent from the client, before the server assigns ids and owners.
  */
 public record EntryDraft(String name, String dimension, Box box, boolean enabled)
 {

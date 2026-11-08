@@ -49,8 +49,7 @@ public final class GuiCreateEntry extends GuiBase
             return;
         }
 
-        Minecraft mc = Minecraft.getInstance();
-        BlockPos pos = mc.player == null ? BlockPos.ZERO : mc.player.blockPosition();
+        BlockPos pos = currentPos();
 
         this.nameField = new GuiTextFieldGeneric(110, 55, 260, 20, this.font);
         this.nameField.setValue(StringUtils.translate("maikuaidoufu_masa_tool.default_entry_name"));
@@ -67,12 +66,12 @@ public final class GuiCreateEntry extends GuiBase
         ButtonGeneric here1 = new ButtonGeneric(340, 85, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.current_pos"));
         here1.setX(340);
-        addButton(here1, (button, mouseButton) -> setCorner(this.x1, this.y1, this.z1, pos));
+        addButton(here1, (button, mouseButton) -> setCorner(this.x1, this.y1, this.z1, currentPos()));
 
         ButtonGeneric here2 = new ButtonGeneric(340, 115, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.current_pos"));
         here2.setX(340);
-        addButton(here2, (button, mouseButton) -> setCorner(this.x2, this.y2, this.z2, pos));
+        addButton(here2, (button, mouseButton) -> setCorner(this.x2, this.y2, this.z2, currentPos()));
 
         ButtonGeneric create = new ButtonGeneric(110, 155, 100, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.create"));
@@ -89,6 +88,12 @@ public final class GuiCreateEntry extends GuiBase
         field.setValue(Integer.toString(value));
         addTextField(field, f -> true);
         return field;
+    }
+
+    private static BlockPos currentPos()
+    {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player == null ? BlockPos.ZERO : mc.player.blockPosition();
     }
 
     private void setCorner(GuiTextFieldInteger x, GuiTextFieldInteger y, GuiTextFieldInteger z, BlockPos pos)

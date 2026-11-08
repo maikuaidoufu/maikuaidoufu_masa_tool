@@ -1,13 +1,14 @@
 package cn.maikuaidoufu.client.compat;
 
+import cn.maikuaidoufu.MasaToolMod;
 import cn.maikuaidoufu.region.Box;
 import fi.dy.masa.litematica.data.DataManager;
 import fi.dy.masa.litematica.schematic.placement.SchematicPlacement;
 import fi.dy.masa.litematica.schematic.placement.SchematicPlacementManager;
 import fi.dy.masa.litematica.schematic.placement.SubRegionPlacement;
 import fi.dy.masa.litematica.selection.AreaSelection;
+import fi.dy.masa.litematica.selection.AreaSelectionSimple;
 import fi.dy.masa.litematica.selection.SelectionManager;
-import fi.dy.masa.litematica.selection.SelectionMode;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,8 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 
 /**
- * Direct Litematica 0.27.x implementation. This class is never loaded unless
- * Litematica is installed.
+ * Litematica 0.27.x implementation of the bridge.
  */
 public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
 {
@@ -37,46 +37,62 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
 
         for (SchematicPlacement placement : manager.getAllSchematicsPlacements())
         {
-            Map<String, fi.dy.masa.litematica.selection.Box> regions =
-                placement.getSubRegionBoxes(SubRegionPlacement.RequiredEnabled.ANY);
-
-            List<Box> boxes = new ArrayList<>();
-            List<String> names = new ArrayList<>();
-
-            for (Map.Entry<String, fi.dy.masa.litematica.selection.Box> entry : regions.entrySet())
+            try
             {
-                Box box = convert(entry.getValue());
+                PlacementInfo info = convertPlacement(placement, dimension);
 
-                if (box != null)
+                if (info != null)
                 {
-                    boxes.add(box);
-                    names.add(entry.getKey());
+                    result.add(info);
                 }
             }
-
-            if (boxes.isEmpty())
+            catch (Exception e)
             {
-                Box enclosing = convert(placement.getEclosingBox());
-
-                if (enclosing != null)
-                {
-                    boxes.add(enclosing);
-                    names.add("区域");
-                }
+                MasaToolMod.LOGGER.warn("Skipping a placement that could not be read", e);
             }
-
-            if (boxes.isEmpty())
-            {
-                continue;
-            }
-
-            String name = placementName(placement);
-            String source = SyncmaticaSupport.isShared(placement) ? "共享" : "本地";
-            result.add(new PlacementInfo(name, source, dimension, boxes, names));
         }
 
         result.sort(Comparator.comparing(PlacementInfo::name, String.CASE_INSENSITIVE_ORDER));
         return result;
+    }
+
+    private static PlacementInfo convertPlacement(SchematicPlacement placement, String dimension)
+    {
+        Map<String, fi.dy.masa.litematica.selection.Box> regions =
+            placement.getSubRegionBoxes(SubRegionPlacement.RequiredEnabled.ANY);
+
+        List<Box> boxes = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+
+        for (Map.Entry<String, fi.dy.masa.litematica.selection.Box> entry : regions.entrySet())
+        {
+            Box box = convert(entry.getValue());
+
+            if (box != null)
+            {
+                boxes.add(box);
+                names.add(entry.getKey());
+            }
+        }
+
+        if (boxes.isEmpty())
+        {
+            Box enclosing = convert(placement.getEclosingBox());
+
+            if (enclosing != null)
+            {
+                boxes.add(enclosing);
+                names.add("区域");
+            }
+        }
+
+        if (boxes.isEmpty())
+        {
+            return null;
+        }
+
+        String source = SyncmaticaSupport.isShared(placement) ? "共享" : "本地";
+        return new PlacementInfo(placementName(placement), source, dimension, boxes, names);
     }
 
     @Override
@@ -84,7 +100,7 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
     {
         SelectionManager manager = DataManager.getSelectionManager();
 
-        if (manager == null || manager.getSelectionMode() != SelectionMode.NORMAL)
+        if (manager == null)
         {
             return null;
         }
@@ -98,10 +114,14 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
 
         List<Box> boxes = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        Map<String, fi.dy.masa.litematica.selection.Box> regions = selection.getAllSubRegions();
 
-        for (Map.Entry<String, fi.dy.masa.litematica.selection.Box> entry : regions.entrySet())
+        for (Map.Entry<String, fi.dy.masa.litematica.selection.Box> entry : selection.getAllSubRegions().entrySet())
         {
+            if (isPlaceholder(selection, entry.getValue()))
+            {
+                continue;
+            }
+
             Box box = convert(entry.getValue());
 
             if (box != null)
@@ -117,6 +137,11 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
 
             for (fi.dy.masa.litematica.selection.Box sourceBox : selection.getAllSubRegionBoxes())
             {
+                if (isPlaceholder(selection, sourceBox))
+                {
+                    continue;
+                }
+
                 Box box = convert(sourceBox);
 
                 if (box != null)
@@ -140,6 +165,23 @@ public final class LitematicaBridgeImpl implements LitematicaSupport.Bridge
         }
 
         return new SelectionInfo(name, "选区", currentDimension(), boxes, names);
+    }
+
+    /**
+     * The simple selection mode hands out one box at the world origin before the
+     * player has picked any corner.
+     */
+    private static boolean isPlaceholder(AreaSelection selection, fi.dy.masa.litematica.selection.Box box)
+    {
+        if (!(selection instanceof AreaSelectionSimple) || box == null)
+        {
+            return false;
+        }
+
+        BlockPos pos1 = box.getPos1();
+        BlockPos pos2 = box.getPos2();
+
+        return pos1 != null && pos2 != null && pos1.equals(BlockPos.ZERO) && pos2.equals(BlockPos.ZERO);
     }
 
     private static Box convert(fi.dy.masa.litematica.selection.Box box)

@@ -20,6 +20,7 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
 {
     private final WidgetEntryList parent;
     private final RegionEntry entry;
+    private final RegionGroup group;
     private final boolean isOdd;
     private final int buttonsStartX;
 
@@ -30,18 +31,18 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         this.parent = parent;
         this.entry = entry;
         this.isOdd = isOdd;
-        RegionGroup group = ClientGroupStore.group(parent.getParentGui().getGroupId());
+        this.group = ClientGroupStore.group(parent.getParentGui().getGroupId());
 
         int right = x + width - 2;
         int buttonY = y + 2;
 
-        boolean canEdit = group != null && ClientGroupStore.canEditEntry(group, entry);
-        ButtonGeneric delete = new ButtonGeneric(right, buttonY, -1, 20,
+        boolean canEdit = this.group != null && ClientGroupStore.canEditEntry(this.group, entry);
+        ButtonGeneric delete = new HintButton(right, buttonY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.delete"));
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canEdit);
         delete.setHoverStrings(canEdit ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
-        addButton(delete, (button, mouseButton) -> confirmDelete(group));
+        addButton(delete, (button, mouseButton) -> confirmDelete());
         right = delete.getX() - 2;
 
         ButtonOnOff highlight = new ButtonOnOff(right, buttonY, -1, true,
@@ -53,19 +54,19 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         });
         right = highlight.getX() - 2;
 
-        ButtonOnOff enabled = new ButtonOnOff(right, buttonY, -1, true,
+        ButtonOnOff enabled = new HintOnOff(right, buttonY, -1, true,
             "maikuaidoufu_masa_tool.button.enabled", entry.enabled());
         enabled.setEnabled(canEdit);
         enabled.setHoverStrings(!canEdit
             ? StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission")
-            : group != null && !group.enabled()
+            : this.group != null && !this.group.enabled()
                 ? StringUtils.translate("maikuaidoufu_masa_tool.hover.group_disabled")
                 : "");
         addButton(enabled, (button, mouseButton) ->
         {
-            if (group != null)
+            if (this.group != null)
             {
-                ClientActions.setEntryEnabled(group.id(), this.entry.id(), !this.entry.enabled());
+                ClientActions.setEntryEnabled(this.group.id(), this.entry.id(), !this.entry.enabled());
             }
         });
         this.buttonsStartX = enabled.getX() - 2;
@@ -78,8 +79,7 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         int color = selected || hovered ? 0x40FFFFFF : this.isOdd ? 0x24FFFFFF : 0x14FFFFFF;
         RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, color);
 
-        RegionGroup group = ClientGroupStore.group(this.parent.getParentGui().getGroupId());
-        boolean effectivelyEnabled = group != null && group.enabled() && this.entry.enabled();
+        boolean effectivelyEnabled = this.group != null && this.group.enabled() && this.entry.enabled();
         int nameColor = effectivelyEnabled ? 0xFFFFFFFF : 0xFF9A9A9A;
         Minecraft mc = Minecraft.getInstance();
         int maxWidth = Math.max(10, this.buttonsStartX - this.x - 8);
@@ -96,9 +96,9 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         super.render(ctx, mouseX, mouseY, selected);
     }
 
-    private void confirmDelete(RegionGroup group)
+    private void confirmDelete()
     {
-        if (group == null)
+        if (this.group == null)
         {
             return;
         }
@@ -106,6 +106,6 @@ public final class WidgetEntry extends WidgetListEntryBase<RegionEntry>
         String title = StringUtils.translate("maikuaidoufu_masa_tool.confirm.delete_entry_title");
         String message = StringUtils.translate("maikuaidoufu_masa_tool.confirm.delete_entry_message", this.entry.name());
         GuiBase.openGui(new GuiConfirm(title, List.of(message), () ->
-            ClientActions.deleteEntry(group.id(), this.entry.id()), this.parent.getParentGui()));
+            ClientActions.deleteEntry(this.group.id(), this.entry.id()), this.parent.getParentGui()));
     }
 }

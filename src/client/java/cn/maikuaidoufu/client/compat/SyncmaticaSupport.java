@@ -4,8 +4,8 @@ import fi.dy.masa.litematica.schematic.placement.SchematicPlacement;
 import java.lang.reflect.Method;
 
 /**
- * Optional Syncmatica bridge, only used for the "shared/local" label in the
- * import picker. It has no effect on the stored region tree.
+ * Reads the Syncmatica shared flag through reflection; used for the
+ * shared/local label in the placement list.
  */
 public final class SyncmaticaSupport
 {

@@ -23,6 +23,7 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
     private final RegionGroup group;
     private final boolean isOdd;
     private final int buttonsStartX;
+    private final String meta;
 
     public WidgetGroupEntry(int x, int y, int width, int height, boolean isOdd,
                             RegionGroup group, int listIndex, WidgetGroupList parent)
@@ -31,6 +32,7 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
         this.parent = parent;
         this.group = group;
         this.isOdd = isOdd;
+        this.meta = metadata();
 
         int right = x + width - 2;
         int buttonY = y + 1;
@@ -41,7 +43,7 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
             : "maikuaidoufu_masa_tool.button.delete");
 
         boolean canDelete = clear ? ClientGroupStore.canClearGroup(group) : ClientGroupStore.canDeleteGroup(group);
-        ButtonGeneric delete = new ButtonGeneric(right, buttonY, -1, 20, deleteLabel);
+        ButtonGeneric delete = new HintButton(right, buttonY, -1, 20, deleteLabel);
         delete.setX(right - delete.getWidth());
         delete.setEnabled(canDelete);
         delete.setHoverStrings(canDelete ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
@@ -58,7 +60,7 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
         right = highlight.getX() - 2;
 
         boolean canMaster = ClientGroupStore.canEditGroup(group);
-        ButtonOnOff master = new ButtonOnOff(right, buttonY, -1, true,
+        ButtonOnOff master = new HintOnOff(right, buttonY, -1, true,
             "maikuaidoufu_masa_tool.button.master", group.enabled());
         master.setEnabled(canMaster);
         master.setHoverStrings(canMaster ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
@@ -85,16 +87,15 @@ public final class WidgetGroupEntry extends WidgetListEntryBase<RegionGroup>
         String name = this.group.defaultGroup()
             ? StringUtils.translate("maikuaidoufu_masa_tool.group.default")
             : this.group.name();
-        String meta = metadata();
 
-        int metaWidth = mc.font.width(meta);
+        int metaWidth = mc.font.width(this.meta);
         int metaX = this.buttonsStartX - metaWidth - 8;
         int maxNameWidth = Math.max(10, metaX - this.x - 6);
         String nameDisplay = mc.font.plainSubstrByWidth(name, maxNameWidth);
 
         int nameColor = this.group.defaultGroup() ? 0xFFFFD060 : this.group.enabled() ? 0xFFFFFFFF : 0xFF9A9A9A;
         drawString(ctx, this.x + 4, this.y + 7, nameColor, nameDisplay);
-        drawString(ctx, metaX, this.y + 7, 0xFF9A9A9A, meta);
+        drawString(ctx, metaX, this.y + 7, 0xFF9A9A9A, this.meta);
 
         super.render(ctx, mouseX, mouseY, selected);
     }

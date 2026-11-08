@@ -5,8 +5,8 @@ import java.util.List;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Classloading-safe facade for the optional Litematica integration. The bridge
- * implementation is only loaded when Litematica is present.
+ * Reflective entry point to the Litematica bridge. When Litematica is missing
+ * the bridge stays null and every call returns an empty result.
  */
 public final class LitematicaSupport
 {
@@ -37,7 +37,7 @@ public final class LitematicaSupport
         }
         catch (Throwable e)
         {
-            MasaToolMod.LOGGER.error("Failed to initialize the optional Litematica bridge", e);
+            MasaToolMod.LOGGER.error("Failed to initialize the Litematica bridge", e);
             return null;
         }
     }
@@ -60,7 +60,7 @@ public final class LitematicaSupport
         }
         catch (Throwable e)
         {
-            MasaToolMod.LOGGER.warn("Failed to read Litematica placements: {}", e.getMessage());
+            MasaToolMod.LOGGER.warn("Failed to read Litematica placements", e);
             return List.of();
         }
     }
@@ -78,7 +78,7 @@ public final class LitematicaSupport
         }
         catch (Throwable e)
         {
-            MasaToolMod.LOGGER.warn("Failed to read Litematica selection: {}", e.getMessage());
+            MasaToolMod.LOGGER.warn("Failed to read the Litematica selection", e);
             return null;
         }
     }
