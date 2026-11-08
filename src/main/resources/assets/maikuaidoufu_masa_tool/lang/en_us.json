@@ -2,7 +2,9 @@
   "maikuaidoufu_masa_tool.title": "Doufu's Masa Tool",
   "maikuaidoufu_masa_tool.tab.hotkeys": "Hotkeys",
   "maikuaidoufu_masa_tool.tab.regions": "Observer Suppression",
+  "maikuaidoufu_masa_tool.tab.portal": "Portal Log",
   "maikuaidoufu_masa_tool.title.hotkeys": "Hotkeys",
+  "maikuaidoufu_masa_tool.title.portal": "Portal Log",
   "maikuaidoufu_masa_tool.title.pick_placement": "Choose a Placement",
   "maikuaidoufu_masa_tool.title.create_entry": "Create Sub-region",
   "maikuaidoufu_masa_tool.title.rename": "Rename Group",
@@ -45,6 +47,11 @@
   "maikuaidoufu_masa_tool.button.confirm": "Confirm",
   "maikuaidoufu_masa_tool.button.save": "Save",
   "maikuaidoufu_masa_tool.button.current_pos": "Current Pos",
+  "maikuaidoufu_masa_tool.button.portal_toggle": "Log: %s",
+  "maikuaidoufu_masa_tool.button.portal_clear": "Clear",
+  "maikuaidoufu_masa_tool.button.portal_all": "All",
+  "maikuaidoufu_masa_tool.button.portal_new": "New",
+  "maikuaidoufu_masa_tool.button.portal_link": "Link",
 
   "maikuaidoufu_masa_tool.hover.need_litematica": "Litematica is required",
   "maikuaidoufu_masa_tool.hover.no_permission": "No permission",
@@ -69,6 +76,11 @@
   "maikuaidoufu_masa_tool.dimension.end": "End",
 
   "maikuaidoufu_masa_tool.config.name.open_gui": "Open GUI",
+  "maikuaidoufu_masa_tool.portal.prefix.new": "New",
+  "maikuaidoufu_masa_tool.portal.prefix.link": "Link",
+  "maikuaidoufu_masa_tool.portal.prefix.other": "Info",
+  "maikuaidoufu_masa_tool.portal.empty": "No entries yet. Turn logging on and walk through a portal.",
+  "maikuaidoufu_masa_tool.portal.no_match": "No matching entries",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§cYou do not have permission to do that.",
   "maikuaidoufu_masa_tool.message.invalid_region": "§cInvalid region coordinates or name.",

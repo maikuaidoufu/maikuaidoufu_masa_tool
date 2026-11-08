@@ -3,7 +3,7 @@
   "id": "maikuaidoufu_masa_tool",
   "version": "${version}",
   "name": "Doufu's Masa Tool",
-  "description": "Region-scoped observer suppression with server-synced groups and sub-regions. The interface runs on MaLiLib, with optional Litematica import.",
+  "description": "Region-scoped observer suppression with server-synced groups, plus a nether portal travel terminal. The interface runs on MaLiLib, with optional Litematica import.",
   "authors": [
     "Doufu"
   ],

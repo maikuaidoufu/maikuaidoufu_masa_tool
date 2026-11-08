@@ -1,6 +1,7 @@
 package cn.maikuaidoufu.net;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.portal.PortalLog;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionEntry;
 import cn.maikuaidoufu.region.RegionGroup;
@@ -32,8 +33,11 @@ public final class RegionNetworking
         PayloadTypeRegistry.serverboundPlay().registerLarge(GroupControlPayload.TYPE, GroupControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
         PayloadTypeRegistry.serverboundPlay().registerLarge(EntryControlPayload.TYPE, EntryControlPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
         PayloadTypeRegistry.serverboundPlay().register(RequestSnapshotPayload.TYPE, RequestSnapshotPayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(PortalTogglePayload.TYPE, PortalTogglePayload.CODEC);
 
         PayloadTypeRegistry.clientboundPlay().registerLarge(GroupListPayload.TYPE, GroupListPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
+        PayloadTypeRegistry.clientboundPlay().register(PortalEventPayload.TYPE, PortalEventPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(PortalStatePayload.TYPE, PortalStatePayload.CODEC);
     }
 
     public static void registerServerHandlers()
@@ -53,6 +57,9 @@ public final class RegionNetworking
         ServerPlayNetworking.registerGlobalReceiver(RequestSnapshotPayload.TYPE, (payload, context) ->
             context.server().execute(() -> sendSnapshot(context.player()))
         );
+        ServerPlayNetworking.registerGlobalReceiver(PortalTogglePayload.TYPE, (payload, context) ->
+            context.server().execute(() -> handlePortalToggle(context.player(), context.server(), payload))
+        );
     }
 
     public static void sendSnapshot(ServerPlayer player)
@@ -71,6 +78,7 @@ public final class RegionNetworking
         );
 
         ServerPlayNetworking.send(player, payload);
+        PortalLog.sendState(player);
     }
 
     public static void broadcast(MinecraftServer server)
@@ -251,8 +259,7 @@ public final class RegionNetworking
     }
 
     private static void handleEntryControl(ServerPlayer player, MinecraftServer server, EntryControlPayload payload)
-    {
-        RegionGroup group = RegionManager.getGroup(payload.groupId());
+    {        RegionGroup group = RegionManager.getGroup(payload.groupId());
 
         if (group == null)
         {
@@ -287,6 +294,18 @@ public final class RegionNetworking
 
         RegionStore.save();
         broadcast(server);
+    }
+
+    private static void handlePortalToggle(ServerPlayer player, MinecraftServer server, PortalTogglePayload payload)
+    {
+        if (!ServerConfig.isOp(player))
+        {
+            message(player, "maikuaidoufu_masa_tool.message.no_permission");
+            PortalLog.sendState(player);
+            return;
+        }
+
+        PortalLog.setEnabled(payload.enabled(), server);
     }
 
     private static boolean validDraft(MinecraftServer server, EntryDraft draft)

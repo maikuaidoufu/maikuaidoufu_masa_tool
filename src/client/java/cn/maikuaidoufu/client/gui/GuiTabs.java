@@ -9,7 +9,8 @@ public final class GuiTabs
     public enum Tab
     {
         HOTKEYS,
-        GROUPS
+        GROUPS,
+        PORTAL
     }
 
     private GuiTabs()
@@ -33,13 +34,21 @@ public final class GuiTabs
 
     public static String label(Tab tab)
     {
-        return StringUtils.translate(tab == Tab.HOTKEYS
-            ? "maikuaidoufu_masa_tool.tab.hotkeys"
-            : "maikuaidoufu_masa_tool.tab.regions");
+        return switch (tab)
+        {
+            case HOTKEYS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.hotkeys");
+            case GROUPS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.regions");
+            case PORTAL -> StringUtils.translate("maikuaidoufu_masa_tool.tab.portal");
+        };
     }
 
     private static void open(Tab tab)
     {
-        GuiBase.openGui(tab == Tab.GROUPS ? new GuiGroupList() : new GuiHotkeys());
+        GuiBase.openGui(switch (tab)
+        {
+            case HOTKEYS -> new GuiHotkeys();
+            case GROUPS -> new GuiGroupList();
+            case PORTAL -> new GuiPortalLog();
+        });
     }
 }

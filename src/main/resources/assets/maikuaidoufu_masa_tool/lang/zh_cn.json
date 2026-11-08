@@ -2,7 +2,9 @@
   "maikuaidoufu_masa_tool.title": "Doufu's Masa Tool",
   "maikuaidoufu_masa_tool.tab.hotkeys": "热键",
   "maikuaidoufu_masa_tool.tab.regions": "区域侦测器禁用",
+  "maikuaidoufu_masa_tool.tab.portal": "地狱门检测",
   "maikuaidoufu_masa_tool.title.hotkeys": "热键",
+  "maikuaidoufu_masa_tool.title.portal": "地狱门检测",
   "maikuaidoufu_masa_tool.title.pick_placement": "选择已放置的投影",
   "maikuaidoufu_masa_tool.title.create_entry": "新建区域",
   "maikuaidoufu_masa_tool.title.rename": "重命名分组",
@@ -45,6 +47,11 @@
   "maikuaidoufu_masa_tool.button.confirm": "确认",
   "maikuaidoufu_masa_tool.button.save": "保存",
   "maikuaidoufu_masa_tool.button.current_pos": "当前位置",
+  "maikuaidoufu_masa_tool.button.portal_toggle": "记录: %s",
+  "maikuaidoufu_masa_tool.button.portal_clear": "清空",
+  "maikuaidoufu_masa_tool.button.portal_all": "全部",
+  "maikuaidoufu_masa_tool.button.portal_new": "新建",
+  "maikuaidoufu_masa_tool.button.portal_link": "链接",
 
   "maikuaidoufu_masa_tool.hover.need_litematica": "需要安装 Litematica",
   "maikuaidoufu_masa_tool.hover.no_permission": "没有权限",
@@ -69,6 +76,11 @@
   "maikuaidoufu_masa_tool.dimension.end": "末地",
 
   "maikuaidoufu_masa_tool.config.name.open_gui": "打开界面",
+  "maikuaidoufu_masa_tool.portal.prefix.new": "新建",
+  "maikuaidoufu_masa_tool.portal.prefix.link": "链接",
+  "maikuaidoufu_masa_tool.portal.prefix.other": "信息",
+  "maikuaidoufu_masa_tool.portal.empty": "暂无记录，开启记录后穿过地狱门试试",
+  "maikuaidoufu_masa_tool.portal.no_match": "没有匹配的记录",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§c你没有权限执行这个操作。",
   "maikuaidoufu_masa_tool.message.invalid_region": "§c区域坐标或名称无效。",

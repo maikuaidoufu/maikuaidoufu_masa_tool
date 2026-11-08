@@ -1,7 +1,10 @@
 package cn.maikuaidoufu.client;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.client.gui.GuiPortalLog;
 import cn.maikuaidoufu.net.GroupListPayload;
+import cn.maikuaidoufu.net.PortalEventPayload;
+import cn.maikuaidoufu.net.PortalStatePayload;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -18,14 +21,27 @@ public final class MasaToolClientImpl
         ClientPlayNetworking.registerGlobalReceiver(GroupListPayload.TYPE, (payload, context) ->
             context.client().execute(() -> handleSnapshot(context.client(), payload))
         );
+        ClientPlayNetworking.registerGlobalReceiver(PortalEventPayload.TYPE, (payload, context) ->
+            context.client().execute(() -> ClientPortalLog.add(payload.text(), payload.kind()))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(PortalStatePayload.TYPE, (payload, context) ->
+            context.client().execute(() -> handlePortalState(context.client(), payload))
+        );
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
         {
             ClientGroupStore.clear();
+            ClientPortalLog.clear();
+            ClientPortalLog.setEnabled(false);
             ClientActions.requestSnapshot();
         });
 
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientGroupStore.clear());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
+        {
+            ClientGroupStore.clear();
+            ClientPortalLog.clear();
+            ClientPortalLog.setEnabled(false);
+        });
 
         RenderEventHandler.getInstance().registerWorldLastRenderer(new RegionHighlightRenderer());
 
@@ -52,6 +68,16 @@ public final class MasaToolClientImpl
         if (mc.screen instanceof GroupStoreListener listener)
         {
             listener.onGroupsChanged();
+        }
+    }
+
+    private static void handlePortalState(Minecraft mc, PortalStatePayload payload)
+    {
+        ClientPortalLog.setEnabled(payload.enabled());
+
+        if (mc.screen instanceof GuiPortalLog gui)
+        {
+            gui.initGui();
         }
     }
 }

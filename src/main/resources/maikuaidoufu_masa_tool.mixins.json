@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "minVersion": "0.8",
   "mixins": [
-    "ObserverBlockMixin"
+    "NetherPortalBlockMixin",
+    "ObserverBlockMixin",
+    "PortalForcerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

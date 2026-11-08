@@ -1,6 +1,7 @@
 package cn.maikuaidoufu;
 
 import cn.maikuaidoufu.net.RegionNetworking;
+import cn.maikuaidoufu.portal.PortalLog;
 import cn.maikuaidoufu.server.RegionManager;
 import cn.maikuaidoufu.server.RegionStore;
 import cn.maikuaidoufu.server.ServerConfig;
@@ -28,7 +29,11 @@ public final class MasaToolMod implements ModInitializer
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> RegionStore.save());
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> RegionManager.clear());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server ->
+        {
+            RegionManager.clear();
+            PortalLog.reset();
+        });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
             RegionNetworking.sendSnapshot(handler.player)

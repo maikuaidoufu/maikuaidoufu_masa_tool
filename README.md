@@ -1,8 +1,10 @@
 # maikuaidoufu_masa_tool
 
-Doufu's Masa Tool stops observers from pulsing inside chosen regions. Groups and
-sub-regions are stored on the server, and the interface runs on MaLiLib. Regions
-can also be imported from Litematica placements or area selections.
+Doufu's Masa Tool stops observers from pulsing inside chosen regions and keeps a
+terminal of nether portal travels: who went through, where it came out, and whether
+the game linked an existing portal or built a new one. Groups and sub-regions are
+stored on the server, and the interface runs on MaLiLib. Regions can also be imported
+from Litematica placements or area selections.
 
 ## Build
 

@@ -5,6 +5,7 @@ import cn.maikuaidoufu.net.CreateGroupPayload;
 import cn.maikuaidoufu.net.EntryControlPayload;
 import cn.maikuaidoufu.net.EntryDraft;
 import cn.maikuaidoufu.net.GroupControlPayload;
+import cn.maikuaidoufu.net.PortalTogglePayload;
 import cn.maikuaidoufu.net.RequestSnapshotPayload;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionGroup;
@@ -100,6 +101,14 @@ public final class ClientActions
         {
             ClientPlayNetworking.send(new EntryControlPayload(
                 groupId, entryId, EntryControlPayload.Action.DELETE, false));
+        }
+    }
+
+    public static void setPortalLogEnabled(boolean enabled)
+    {
+        if (ClientPlayNetworking.canSend(PortalTogglePayload.TYPE))
+        {
+            ClientPlayNetworking.send(new PortalTogglePayload(enabled));
         }
     }
 
