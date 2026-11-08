@@ -33,7 +33,7 @@ public final class Configs implements IConfigHandler
 
     public static final ConfigHotkey OPEN_GUI = new ConfigHotkey(
         "openGui",
-        "X,D",
+        "C,F",
         "",
         "maikuaidoufu_masa_tool.config.name.open_gui",
         "maikuaidoufu_masa_tool.config.name.open_gui");
