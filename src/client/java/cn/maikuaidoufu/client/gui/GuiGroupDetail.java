@@ -140,7 +140,7 @@ public final class GuiGroupDetail
         add.setEnabled(canAdd);
         GuiHints.set(add, canAdd ? "" : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
         addButton(add, (button, mouseButton) ->
-            GuiBase.openGui(new GuiCreateEntryMenu(group.id(), this)));
+            GuiBase.openGui(new GuiCreateEntry(group.id(), this)));
     }
 
     private void confirmDelete(RegionGroup group)

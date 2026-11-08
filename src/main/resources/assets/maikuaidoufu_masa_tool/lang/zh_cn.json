@@ -28,9 +28,8 @@
   "maikuaidoufu_masa_tool.name.imported": "导入",
 
   "maikuaidoufu_masa_tool.button.import": "从投影导入...",
-  "maikuaidoufu_masa_tool.button.import_selection": "从当前选区导入",
   "maikuaidoufu_masa_tool.button.import_selected": "导入",
-  "maikuaidoufu_masa_tool.button.manual_entry": "手动输入",
+  "maikuaidoufu_masa_tool.button.use_selection_corners": "使用选区角点",
   "maikuaidoufu_masa_tool.button.configure": "配置",
   "maikuaidoufu_masa_tool.button.switch": "开关: %s",
   "maikuaidoufu_masa_tool.button.highlight": "高亮: %s",
