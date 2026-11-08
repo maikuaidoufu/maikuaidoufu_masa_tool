@@ -8,9 +8,9 @@ public final class GuiTabs
 {
     public enum Tab
     {
-        HOTKEYS,
         GROUPS,
-        PORTAL
+        PORTAL,
+        HOTKEYS
     }
 
     private GuiTabs()
