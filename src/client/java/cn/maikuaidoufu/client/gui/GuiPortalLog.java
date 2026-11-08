@@ -63,34 +63,34 @@ public final class GuiPortalLog extends GuiBase
         });
 
         int rowY = 78;
-        int right = getScreenWidth() - 10;
+        int x = 12;
 
+        x = addPreset(x, rowY, "maikuaidoufu_masa_tool.button.portal_all", "");
+        x = addPreset(x, rowY, "maikuaidoufu_masa_tool.button.portal_new",
+            ClientPortalLog.prefix(ClientPortalLog.KIND_NEW));
+        x = addPreset(x, rowY, "maikuaidoufu_masa_tool.button.portal_link",
+            ClientPortalLog.prefix(ClientPortalLog.KIND_LINK));
+
+        int right = getScreenWidth() - 10;
         ButtonGeneric clear = new ButtonGeneric(right, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.button.portal_clear"));
         clear.setX(right - clear.getWidth());
         addButton(clear, (button, mouseButton) -> ClientPortalLog.clear());
-        right = clear.getX() - 4;
 
-        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_link",
-            ClientPortalLog.prefix(ClientPortalLog.KIND_LINK));
-        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_new",
-            ClientPortalLog.prefix(ClientPortalLog.KIND_NEW));
-        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_all", "");
-
-        int filterX = 12;
-        int filterWidth = Math.max(80, right - 4 - filterX);
+        int filterX = x;
+        int filterWidth = Math.max(80, clear.getX() - 6 - filterX);
         this.filterField = new GuiTextFieldGeneric(filterX, rowY, filterWidth, 20, this.font);
         this.filterField.setMaxLengthWrapper(64);
         this.filterField.setValue(this.filterText);
         addTextField(this.filterField, field -> true);
     }
 
-    private int addPresetToLeft(int right, int y, String labelKey, String filter)
+    private int addPreset(int x, int y, String labelKey, String filter)
     {
-        ButtonGeneric button = new ButtonGeneric(right, y, -1, 20, StringUtils.translate(labelKey));
-        button.setX(right - button.getWidth());
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, 20, StringUtils.translate(labelKey));
+        button.setX(x);
         addButton(button, (b, mouseButton) -> setFilter(filter));
-        return button.getX() - 4;
+        return button.getX() + button.getWidth() + 4;
     }
 
     private void setFilter(String value)
