@@ -47,7 +47,7 @@
   "maikuaidoufu_masa_tool.button.confirm": "确认",
   "maikuaidoufu_masa_tool.button.save": "保存",
   "maikuaidoufu_masa_tool.button.current_pos": "当前位置",
-  "maikuaidoufu_masa_tool.button.portal_toggle": "记录: %s",
+  "maikuaidoufu_masa_tool.button.portal_toggle": "启用: %s",
   "maikuaidoufu_masa_tool.button.portal_clear": "清空",
   "maikuaidoufu_masa_tool.button.portal_all": "全部",
   "maikuaidoufu_masa_tool.button.portal_new": "新建",
@@ -79,7 +79,7 @@
   "maikuaidoufu_masa_tool.portal.prefix.new": "新建",
   "maikuaidoufu_masa_tool.portal.prefix.link": "链接",
   "maikuaidoufu_masa_tool.portal.prefix.other": "信息",
-  "maikuaidoufu_masa_tool.portal.empty": "暂无记录，开启记录后穿过地狱门试试",
+  "maikuaidoufu_masa_tool.portal.empty": "暂无记录，启用后穿过地狱门试试",
   "maikuaidoufu_masa_tool.portal.no_match": "没有匹配的记录",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§c你没有权限执行这个操作。",

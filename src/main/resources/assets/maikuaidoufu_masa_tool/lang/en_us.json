@@ -47,7 +47,7 @@
   "maikuaidoufu_masa_tool.button.confirm": "Confirm",
   "maikuaidoufu_masa_tool.button.save": "Save",
   "maikuaidoufu_masa_tool.button.current_pos": "Current Pos",
-  "maikuaidoufu_masa_tool.button.portal_toggle": "Log: %s",
+  "maikuaidoufu_masa_tool.button.portal_toggle": "Enabled: %s",
   "maikuaidoufu_masa_tool.button.portal_clear": "Clear",
   "maikuaidoufu_masa_tool.button.portal_all": "All",
   "maikuaidoufu_masa_tool.button.portal_new": "New",
@@ -79,7 +79,7 @@
   "maikuaidoufu_masa_tool.portal.prefix.new": "New",
   "maikuaidoufu_masa_tool.portal.prefix.link": "Link",
   "maikuaidoufu_masa_tool.portal.prefix.other": "Info",
-  "maikuaidoufu_masa_tool.portal.empty": "No entries yet. Turn logging on and walk through a portal.",
+  "maikuaidoufu_masa_tool.portal.empty": "No entries yet. Enable it and walk through a portal.",
   "maikuaidoufu_masa_tool.portal.no_match": "No matching entries",
 
   "maikuaidoufu_masa_tool.message.no_permission": "§cYou do not have permission to do that.",

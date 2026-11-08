@@ -45,17 +45,8 @@ public final class GuiPortalLog extends GuiBase
         super.initGui();
         GuiTabs.add(this, GuiTabs.Tab.PORTAL, 26);
 
-        int y = 52;
-        int right = getScreenWidth() - 10;
-
-        ButtonGeneric clear = new ButtonGeneric(right, y, -1, 20,
-            StringUtils.translate("maikuaidoufu_masa_tool.button.portal_clear"));
-        clear.setX(right - clear.getWidth());
-        addButton(clear, (button, mouseButton) -> ClientPortalLog.clear());
-        right = clear.getX() - 6;
-
         boolean canToggle = ClientActions.canTogglePortalLog();
-        ButtonOnOff toggle = new HintOnOff(12, y, -1, false,
+        ButtonOnOff toggle = new HintOnOff(12, 52, -1, false,
             "maikuaidoufu_masa_tool.button.portal_toggle", ClientPortalLog.isEnabled());
         toggle.setEnabled(canToggle);
         GuiHints.set(toggle, canToggle ? ""
@@ -71,29 +62,35 @@ public final class GuiPortalLog extends GuiBase
             }
         });
 
-        int filterX = toggle.getX() + toggle.getWidth() + 6;
-        int filterWidth = Math.max(60, right - filterX);
-        this.filterField = new GuiTextFieldGeneric(filterX, y, filterWidth, 20, this.font);
+        int rowY = 78;
+        int right = getScreenWidth() - 10;
+
+        ButtonGeneric clear = new ButtonGeneric(right, rowY, -1, 20,
+            StringUtils.translate("maikuaidoufu_masa_tool.button.portal_clear"));
+        clear.setX(right - clear.getWidth());
+        addButton(clear, (button, mouseButton) -> ClientPortalLog.clear());
+        right = clear.getX() - 4;
+
+        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_link",
+            ClientPortalLog.prefix(ClientPortalLog.KIND_LINK));
+        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_new",
+            ClientPortalLog.prefix(ClientPortalLog.KIND_NEW));
+        right = addPresetToLeft(right, rowY, "maikuaidoufu_masa_tool.button.portal_all", "");
+
+        int filterX = 12;
+        int filterWidth = Math.max(80, right - 4 - filterX);
+        this.filterField = new GuiTextFieldGeneric(filterX, rowY, filterWidth, 20, this.font);
         this.filterField.setMaxLengthWrapper(64);
         this.filterField.setValue(this.filterText);
         addTextField(this.filterField, field -> true);
-
-        int presetY = y + 26;
-        int presetX = 12;
-
-        presetX = addPreset(presetX, presetY, "maikuaidoufu_masa_tool.button.portal_all", "");
-        presetX = addPreset(presetX, presetY, "maikuaidoufu_masa_tool.button.portal_new",
-            ClientPortalLog.prefix(ClientPortalLog.KIND_NEW));
-        addPreset(presetX, presetY, "maikuaidoufu_masa_tool.button.portal_link",
-            ClientPortalLog.prefix(ClientPortalLog.KIND_LINK));
     }
 
-    private int addPreset(int x, int y, String labelKey, String filter)
+    private int addPresetToLeft(int right, int y, String labelKey, String filter)
     {
-        ButtonGeneric button = new ButtonGeneric(x, y, -1, 20, StringUtils.translate(labelKey));
-        button.setX(x);
+        ButtonGeneric button = new ButtonGeneric(right, y, -1, 20, StringUtils.translate(labelKey));
+        button.setX(right - button.getWidth());
         addButton(button, (b, mouseButton) -> setFilter(filter));
-        return button.getX() + button.getWidth() + 4;
+        return button.getX() - 4;
     }
 
     private void setFilter(String value)
