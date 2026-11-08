@@ -37,7 +37,6 @@ public final class RegionNetworking
 
         PayloadTypeRegistry.clientboundPlay().registerLarge(GroupListPayload.TYPE, GroupListPayload.CODEC, RegionLimits.MAX_PAYLOAD_SIZE);
         PayloadTypeRegistry.clientboundPlay().register(PortalEventPayload.TYPE, PortalEventPayload.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(PortalStatePayload.TYPE, PortalStatePayload.CODEC);
     }
 
     public static void registerServerHandlers()
@@ -58,7 +57,7 @@ public final class RegionNetworking
             context.server().execute(() -> sendSnapshot(context.player()))
         );
         ServerPlayNetworking.registerGlobalReceiver(PortalTogglePayload.TYPE, (payload, context) ->
-            context.server().execute(() -> handlePortalToggle(context.player(), context.server(), payload))
+            context.server().execute(() -> handlePortalToggle(context.player(), payload))
         );
     }
 
@@ -78,7 +77,6 @@ public final class RegionNetworking
         );
 
         ServerPlayNetworking.send(player, payload);
-        PortalLog.sendState(player);
     }
 
     public static void broadcast(MinecraftServer server)
@@ -296,16 +294,9 @@ public final class RegionNetworking
         broadcast(server);
     }
 
-    private static void handlePortalToggle(ServerPlayer player, MinecraftServer server, PortalTogglePayload payload)
+    private static void handlePortalToggle(ServerPlayer player, PortalTogglePayload payload)
     {
-        if (!ServerConfig.isOp(player))
-        {
-            message(player, "maikuaidoufu_masa_tool.message.no_permission");
-            PortalLog.sendState(player);
-            return;
-        }
-
-        PortalLog.setEnabled(payload.enabled(), server);
+        PortalLog.setSubscribed(player, payload.enabled());
     }
 
     private static boolean validDraft(MinecraftServer server, EntryDraft draft)

@@ -2,9 +2,11 @@ package cn.maikuaidoufu.portal;
 
 import cn.maikuaidoufu.MasaToolMod;
 import cn.maikuaidoufu.net.PortalEventPayload;
-import cn.maikuaidoufu.net.PortalStatePayload;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +24,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Captures nether portal travels on the server and forwards them to the client terminal.
+ * Captures nether portal travels for the players that subscribed to the terminal.
  */
 public final class PortalLog
 {
@@ -32,7 +34,7 @@ public final class PortalLog
 
     private static final int MAX_MESSAGES_PER_TICK = 20;
 
-    private static volatile boolean enabled;
+    private static final Set<UUID> SUBSCRIBERS = new HashSet<>();
 
     private static final ThreadLocal<TravelCtx> CURRENT = new ThreadLocal<>();
 
@@ -44,47 +46,56 @@ public final class PortalLog
     {
     }
 
+    /**
+     * Nobody subscribed means nothing is captured at all.
+     */
     public static boolean isEnabled()
     {
-        return enabled;
+        return !SUBSCRIBERS.isEmpty();
     }
 
-    public static void setEnabled(boolean value, MinecraftServer server)
+    public static void setSubscribed(ServerPlayer player, boolean subscribed)
     {
-        if (enabled == value)
+        if (player == null)
         {
             return;
         }
 
-        enabled = value;
-        CURRENT.remove();
-        budgetTick = Long.MIN_VALUE;
-        sentThisTick = 0;
-        suppressed = 0;
-
-        if (server != null)
+        if (subscribed)
         {
-            for (ServerPlayer player : server.getPlayerList().getPlayers())
-            {
-                sendState(player);
-            }
+            SUBSCRIBERS.add(player.getUUID());
+            return;
+        }
+
+        SUBSCRIBERS.remove(player.getUUID());
+        clearTransientState();
+    }
+
+    public static void unsubscribe(ServerPlayer player)
+    {
+        if (player != null && SUBSCRIBERS.remove(player.getUUID()))
+        {
+            clearTransientState();
         }
     }
 
     public static void reset()
     {
-        enabled = false;
-        CURRENT.remove();
+        SUBSCRIBERS.clear();
+        clearTransientState();
     }
 
-    public static void sendState(ServerPlayer player)
+    private static void clearTransientState()
     {
-        if (player == null || !ServerPlayNetworking.canSend(player, PortalStatePayload.TYPE))
+        if (!SUBSCRIBERS.isEmpty())
         {
             return;
         }
 
-        ServerPlayNetworking.send(player, new PortalStatePayload(enabled));
+        CURRENT.remove();
+        budgetTick = Long.MIN_VALUE;
+        sentThisTick = 0;
+        suppressed = 0;
     }
 
     // ------------------------------------------------------------------
@@ -93,7 +104,7 @@ public final class PortalLog
 
     public static void onTravelBegin(ServerLevel level, Entity entity, BlockPos entryPos)
     {
-        if (!enabled)
+        if (!isEnabled())
         {
             return;
         }
@@ -106,7 +117,7 @@ public final class PortalLog
         TravelCtx ctx = CURRENT.get();
         CURRENT.remove();
 
-        if (!enabled)
+        if (!isEnabled())
         {
             return;
         }
@@ -121,7 +132,7 @@ public final class PortalLog
 
     public static void onPortalSearch(BlockPos ideal, boolean toNether, Optional<BlockPos> found)
     {
-        if (!enabled)
+        if (!isEnabled())
         {
             return;
         }
@@ -141,7 +152,7 @@ public final class PortalLog
 
     public static void onPortalCreated(Direction.Axis axis, Optional<FoundRectangle> result)
     {
-        if (!enabled)
+        if (!isEnabled())
         {
             return;
         }
@@ -315,7 +326,7 @@ public final class PortalLog
     {
         MinecraftServer server = level.getServer();
 
-        if (server == null)
+        if (server == null || !isEnabled())
         {
             return;
         }
@@ -331,7 +342,7 @@ public final class PortalLog
 
             if (suppressed > 0)
             {
-                sendToAll(server, "上一 tick 还有 " + suppressed + " 条记录未显示", KIND_OTHER);
+                sendToSubscribers(server, "上一 tick 还有 " + suppressed + " 条记录未显示", KIND_OTHER);
                 suppressed = 0;
             }
         }
@@ -343,16 +354,17 @@ public final class PortalLog
         }
 
         sentThisTick++;
-        sendToAll(server, text, kind);
+        sendToSubscribers(server, text, kind);
     }
 
-    private static void sendToAll(MinecraftServer server, String text, int kind)
+    private static void sendToSubscribers(MinecraftServer server, String text, int kind)
     {
         PortalEventPayload payload = new PortalEventPayload(text, kind);
 
         for (ServerPlayer player : server.getPlayerList().getPlayers())
         {
-            if (ServerPlayNetworking.canSend(player, PortalEventPayload.TYPE))
+            if (SUBSCRIBERS.contains(player.getUUID())
+                && ServerPlayNetworking.canSend(player, PortalEventPayload.TYPE))
             {
                 ServerPlayNetworking.send(player, payload);
             }

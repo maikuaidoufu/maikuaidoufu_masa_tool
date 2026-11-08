@@ -38,6 +38,9 @@ public final class MasaToolMod implements ModInitializer
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
             RegionNetworking.sendSnapshot(handler.player)
         );
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
+            PortalLog.unsubscribe(handler.player)
+        );
 
         LOGGER.info("Doufu's Masa Tool common/server initialized");
     }

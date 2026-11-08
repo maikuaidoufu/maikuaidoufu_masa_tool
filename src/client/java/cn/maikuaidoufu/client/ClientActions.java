@@ -104,12 +104,20 @@ public final class ClientActions
         }
     }
 
-    public static void setPortalLogEnabled(boolean enabled)
+    public static boolean canTogglePortalLog()
     {
-        if (ClientPlayNetworking.canSend(PortalTogglePayload.TYPE))
+        return ClientPlayNetworking.canSend(PortalTogglePayload.TYPE);
+    }
+
+    public static boolean setPortalLogEnabled(boolean enabled)
+    {
+        if (!canTogglePortalLog())
         {
-            ClientPlayNetworking.send(new PortalTogglePayload(enabled));
+            return false;
         }
+
+        ClientPlayNetworking.send(new PortalTogglePayload(enabled));
+        return true;
     }
 
     public static String uniqueGroupName(String base)

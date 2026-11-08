@@ -1,7 +1,6 @@
 package cn.maikuaidoufu.client.gui;
 
 import cn.maikuaidoufu.client.ClientActions;
-import cn.maikuaidoufu.client.ClientGroupStore;
 import cn.maikuaidoufu.client.ClientPortalLog;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -55,16 +54,22 @@ public final class GuiPortalLog extends GuiBase
         addButton(clear, (button, mouseButton) -> ClientPortalLog.clear());
         right = clear.getX() - 6;
 
-        boolean canToggle = ClientGroupStore.isConnected() && ClientGroupStore.canEditAll();
+        boolean canToggle = ClientActions.canTogglePortalLog();
         ButtonOnOff toggle = new HintOnOff(12, y, -1, false,
             "maikuaidoufu_masa_tool.button.portal_toggle", ClientPortalLog.isEnabled());
         toggle.setEnabled(canToggle);
         GuiHints.set(toggle, canToggle ? ""
-            : !ClientGroupStore.isConnected()
-                ? StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected")
-                : StringUtils.translate("maikuaidoufu_masa_tool.hover.no_permission"));
+            : StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected"));
         addButton(toggle, (button, mouseButton) ->
-            ClientActions.setPortalLogEnabled(!ClientPortalLog.isEnabled()));
+        {
+            boolean next = !ClientPortalLog.isEnabled();
+
+            if (ClientActions.setPortalLogEnabled(next))
+            {
+                ClientPortalLog.setEnabled(next);
+                initGui();
+            }
+        });
 
         int filterX = toggle.getX() + toggle.getWidth() + 6;
         int filterWidth = Math.max(60, right - filterX);
@@ -195,7 +200,7 @@ public final class GuiPortalLog extends GuiBase
 
         for (ClientPortalLog.Entry entry : ClientPortalLog.entries())
         {
-            String text = ClientPortalLog.prefix(entry.kind()) + " " + entry.text();
+            String text = "[" + ClientPortalLog.prefix(entry.kind()) + "] " + entry.text();
 
             if (!filter.isEmpty() && !text.toLowerCase(Locale.ROOT).contains(filter))
             {
