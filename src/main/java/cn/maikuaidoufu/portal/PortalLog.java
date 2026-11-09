@@ -1,6 +1,7 @@
 package cn.maikuaidoufu.portal;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.net.PortalEvent;
 import cn.maikuaidoufu.net.PortalEventPayload;
 import java.util.HashSet;
 import java.util.Locale;
@@ -10,7 +11,6 @@ import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,12 +19,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * Captures nether portal travels for the players that subscribed to the terminal.
+ *
+ * <p>Only language-neutral data is collected here. The client renders each
+ * event with its own language file, so the server never has to know which
+ * language a subscriber uses.</p>
  */
 public final class PortalLog
 {
@@ -127,7 +130,7 @@ public final class PortalLog
             ctx = new TravelCtx();
         }
 
-        send(level, entity, entryPos, result, ctx);
+        send(level, buildEvent(entity, entryPos, result, ctx));
     }
 
     public static void onPortalSearch(BlockPos ideal, boolean toNether, Optional<BlockPos> found)
@@ -168,7 +171,7 @@ public final class PortalLog
 
         if (rectangle == null)
         {
-            ctx.failure = "无法创建传送门（目标超出世界边界）";
+            ctx.failure = "border";
             return;
         }
 
@@ -176,136 +179,83 @@ public final class PortalLog
     }
 
     // ------------------------------------------------------------------
-    // rendering
+    // data collection
     // ------------------------------------------------------------------
 
-    private static void send(ServerLevel level, Entity entity, BlockPos entryPos, TeleportTransition result,
-                             TravelCtx ctx)
+    private static void send(ServerLevel level, PortalEvent event)
+    {
+        broadcast(level, event);
+    }
+
+    private static PortalEvent buildEvent(Entity entity, BlockPos entryPos, TeleportTransition result,
+                                           TravelCtx ctx)
     {
         int kind;
-        String text;
 
         if (ctx.created != null)
         {
             kind = KIND_NEW;
-            text = describeCreated(entity, entryPos, result, ctx);
         }
         else if (ctx.searched && ctx.found != null)
         {
             kind = KIND_LINK;
-            text = describeLinked(entity, entryPos, result, ctx);
         }
         else
         {
             kind = KIND_OTHER;
-            text = describeOther(entity, entryPos, result, ctx);
         }
 
-        broadcast(level, text, kind);
+        EntityInfo info = describeEntity(entity);
+        String fromDimension = entity.level().dimension().identifier().toString();
+        String toDimension = result == null ? "" : result.newLevel().dimension().identifier().toString();
+        String toPos = result == null ? "" : vector(result.position());
+        String portalPos = ctx.created != null
+            ? blockPos(ctx.created.minCorner)
+            : ctx.found != null ? blockPos(ctx.found) : "";
+        String portalSize = ctx.created != null
+            ? ctx.created.axis1Size + "x" + ctx.created.axis2Size : "";
+        double idealDistance = ctx.ideal != null && ctx.found != null
+            ? Math.sqrt(ctx.found.distSqr(ctx.ideal)) : -1.0;
+
+        return new PortalEvent(
+            kind,
+            info.name(),
+            info.typeName(),
+            info.itemCount(),
+            info.customNamed(),
+            fromDimension,
+            vector(entity.position()),
+            toDimension,
+            toPos,
+            blockPos(entryPos),
+            portalPos,
+            portalSize,
+            ctx.radius,
+            idealDistance,
+            ctx.created != null,
+            ctx.searched,
+            ctx.failure == null ? "" : ctx.failure,
+            0
+        );
     }
 
-    private static String describeCreated(Entity entity, BlockPos entryPos, TeleportTransition result, TravelCtx ctx)
-    {
-        String size = ctx.created.axis1Size + "x" + ctx.created.axis2Size;
-        StringBuilder sb = new StringBuilder();
-        sb.append(blockPos(ctx.created.minCorner)).append(' ').append(size);
-        sb.append(" · ").append(describeTravel(entity, entryPos, result));
-
-        if (ctx.radius > 0)
-        {
-            sb.append(" · 原因: 目标维度方形范围 ").append(ctx.radius).append(" 格内没有门");
-        }
-        else
-        {
-            sb.append(" · 原因: 目标维度没有可链接的门");
-        }
-
-        return sb.toString();
-    }
-
-    private static String describeLinked(Entity entity, BlockPos entryPos, TeleportTransition result, TravelCtx ctx)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(blockPos(ctx.found));
-        sb.append(" · ").append(describeTravel(entity, entryPos, result));
-
-        if (ctx.ideal != null)
-        {
-            String distance = String.format(Locale.ROOT, "%.1f", Math.sqrt(ctx.found.distSqr(ctx.ideal)));
-            sb.append(" · 距预想点 ").append(distance).append(" 格");
-        }
-
-        sb.append(" · 搜索半径 ").append(ctx.radius).append(" 格");
-        return sb.toString();
-    }
-
-    private static String describeOther(Entity entity, BlockPos entryPos, TeleportTransition result, TravelCtx ctx)
-    {
-        StringBuilder sb = new StringBuilder(describeTravel(entity, entryPos, result));
-
-        if (ctx.failure != null)
-        {
-            sb.append(" · 失败: ").append(ctx.failure);
-        }
-
-        return sb.toString();
-    }
-
-    private static String describeTravel(Entity entity, BlockPos entryPos, TeleportTransition result)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(describeEntity(entity));
-        sb.append(' ').append(dimensionName(entity.level().dimension())).append(vector(entity.position()));
-        sb.append(" → ");
-
-        if (result == null)
-        {
-            sb.append("未确定");
-        }
-        else
-        {
-            sb.append(dimensionName(result.newLevel().dimension())).append(vector(result.position()));
-        }
-
-        sb.append(" · 入口").append(blockPos(entryPos));
-        return sb.toString();
-    }
-
-    private static String describeEntity(Entity entity)
+    private static EntityInfo describeEntity(Entity entity)
     {
         if (entity instanceof Player)
         {
-            return entity.getName().getString();
+            return new EntityInfo(entity.getName().getString(), "", -1, false);
         }
 
         if (entity instanceof ItemEntity itemEntity)
         {
             ItemStack stack = itemEntity.getItem();
-            return "物品 " + stack.getHoverName().getString() + (stack.getCount() > 1 ? "×" + stack.getCount() : "");
+            return new EntityInfo(stack.getHoverName().getString(), "", stack.getCount(), false);
         }
 
         String type = entity.getType().getDescription().getString();
-        return entity.hasCustomName() ? entity.getName().getString() + "(" + type + ")" : type;
-    }
-
-    private static String dimensionName(ResourceKey<Level> key)
-    {
-        if (key.equals(Level.OVERWORLD))
-        {
-            return "主世界";
-        }
-
-        if (key.equals(Level.NETHER))
-        {
-            return "下界";
-        }
-
-        if (key.equals(Level.END))
-        {
-            return "末地";
-        }
-
-        return key.identifier().toString();
+        return entity.hasCustomName()
+            ? new EntityInfo(entity.getName().getString(), type, -1, true)
+            : new EntityInfo(type, "", -1, false);
     }
 
     private static String blockPos(BlockPos pos)
@@ -322,7 +272,7 @@ public final class PortalLog
     // output
     // ------------------------------------------------------------------
 
-    private static void broadcast(ServerLevel level, String text, int kind)
+    private static void broadcast(ServerLevel level, PortalEvent event)
     {
         MinecraftServer server = level.getServer();
 
@@ -331,7 +281,8 @@ public final class PortalLog
             return;
         }
 
-        MasaToolMod.LOGGER.info("[PortalLog] {}", text);
+        MasaToolMod.LOGGER.info("[PortalLog] kind={} entity={} {} -> {} portal={}",
+            event.kind(), event.entityName(), event.fromPos(), event.toPos(), event.portalPos());
 
         long tick = level.getGameTime();
 
@@ -342,7 +293,7 @@ public final class PortalLog
 
             if (suppressed > 0)
             {
-                sendToSubscribers(server, "上一 tick 还有 " + suppressed + " 条记录未显示", KIND_OTHER);
+                sendToSubscribers(server, PortalEvent.suppressed(suppressed));
                 suppressed = 0;
             }
         }
@@ -354,12 +305,12 @@ public final class PortalLog
         }
 
         sentThisTick++;
-        sendToSubscribers(server, text, kind);
+        sendToSubscribers(server, event);
     }
 
-    private static void sendToSubscribers(MinecraftServer server, String text, int kind)
+    private static void sendToSubscribers(MinecraftServer server, PortalEvent event)
     {
-        PortalEventPayload payload = new PortalEventPayload(text, kind);
+        PortalEventPayload payload = new PortalEventPayload(event);
 
         for (ServerPlayer player : server.getPlayerList().getPlayers())
         {
@@ -369,6 +320,10 @@ public final class PortalLog
                 ServerPlayNetworking.send(player, payload);
             }
         }
+    }
+
+    private record EntityInfo(String name, String typeName, int itemCount, boolean customNamed)
+    {
     }
 
     private static final class TravelCtx

@@ -35,6 +35,8 @@ dependencies {
 	modClientCompileOnly files("libs/litematica-fabric-1.21.11-0.26.16.jar")
 	modClientRuntimeOnly files("libs/malilib-fabric-1.21.11-0.27.20.jar")
 	modClientRuntimeOnly files("libs/litematica-fabric-1.21.11-0.26.16.jar")
+	modClientCompileOnly files("libs/techutils-0.8.2+1.21.11.jar")
+	modClientRuntimeOnly files("libs/techutils-0.8.2+1.21.11.jar")
 }
 
 processResources {

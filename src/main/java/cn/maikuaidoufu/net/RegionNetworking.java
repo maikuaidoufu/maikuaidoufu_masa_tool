@@ -257,7 +257,8 @@ public final class RegionNetworking
     }
 
     private static void handleEntryControl(ServerPlayer player, MinecraftServer server, EntryControlPayload payload)
-    {        RegionGroup group = RegionManager.getGroup(payload.groupId());
+    {
+        RegionGroup group = RegionManager.getGroup(payload.groupId());
 
         if (group == null)
         {

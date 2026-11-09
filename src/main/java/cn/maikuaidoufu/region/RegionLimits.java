@@ -4,7 +4,8 @@ import java.util.UUID;
 
 public final class RegionLimits
 {
-    public static final int PROTOCOL_VERSION = 1;
+    // Bumped for the language-neutral PortalEventPayload (v2).
+    public static final int PROTOCOL_VERSION = 2;
 
     public static final int MAX_GROUPS = 256;
     public static final int MAX_ENTRIES_PER_GROUP = 256;

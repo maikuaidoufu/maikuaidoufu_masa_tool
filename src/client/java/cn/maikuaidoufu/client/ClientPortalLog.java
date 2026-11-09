@@ -1,5 +1,6 @@
 package cn.maikuaidoufu.client;
 
+import cn.maikuaidoufu.net.PortalEvent;
 import fi.dy.masa.malilib.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +28,21 @@ public final class ClientPortalLog
     {
     }
 
-    public static void add(String text, int kind)
+    public static void add(PortalEvent event)
     {
-        if (text == null || text.isBlank())
+        if (event == null)
         {
             return;
         }
 
-        ENTRIES.add(new Entry(text, kind));
+        String text = PortalLogFormatter.format(event);
+
+        if (text.isBlank())
+        {
+            return;
+        }
+
+        ENTRIES.add(new Entry(text, event.kind()));
 
         while (ENTRIES.size() > MAX_ENTRIES)
         {

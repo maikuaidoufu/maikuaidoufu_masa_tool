@@ -29,7 +29,8 @@
   },
   "recommends": {
     "malilib": ">=0.27.20",
-    "litematica": ">=0.26.16"
+    "litematica": ">=0.26.16",
+    "techutils": "*"
   },
   "suggests": {
     "syncmatica": "*"

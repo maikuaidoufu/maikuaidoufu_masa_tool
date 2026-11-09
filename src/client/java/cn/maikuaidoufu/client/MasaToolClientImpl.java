@@ -1,6 +1,7 @@
 package cn.maikuaidoufu.client;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.client.gui.VerifierGuiHook;
 import cn.maikuaidoufu.net.GroupListPayload;
 import cn.maikuaidoufu.net.PortalEventPayload;
 import fi.dy.masa.malilib.event.RenderEventHandler;
@@ -29,7 +30,7 @@ public final class MasaToolClientImpl
             context.client().execute(() -> handleSnapshot(context.client(), payload))
         );
         ClientPlayNetworking.registerGlobalReceiver(PortalEventPayload.TYPE, (payload, context) ->
-            context.client().execute(() -> ClientPortalLog.add(payload.text(), payload.kind()))
+            context.client().execute(() -> ClientPortalLog.add(payload.event()))
         );
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
@@ -60,6 +61,8 @@ public final class MasaToolClientImpl
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->
         {
+            VerifierGuiHook.onClientTick(client);
+
             if (retriesLeft <= 0 || ClientGroupStore.isConnected())
             {
                 return;

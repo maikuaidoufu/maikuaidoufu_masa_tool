@@ -8,6 +8,7 @@ public final class GuiTabs
 {
     public enum Tab
     {
+        GENERAL,
         GROUPS,
         PORTAL,
         HOTKEYS
@@ -36,6 +37,7 @@ public final class GuiTabs
     {
         return switch (tab)
         {
+            case GENERAL -> StringUtils.translate("maikuaidoufu_masa_tool.tab.general");
             case HOTKEYS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.hotkeys");
             case GROUPS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.regions");
             case PORTAL -> StringUtils.translate("maikuaidoufu_masa_tool.tab.portal");
@@ -46,6 +48,7 @@ public final class GuiTabs
     {
         GuiBase.openGui(switch (tab)
         {
+            case GENERAL -> new GuiGeneral();
             case HOTKEYS -> new GuiHotkeys();
             case GROUPS -> new GuiGroupList();
             case PORTAL -> new GuiPortalLog();
