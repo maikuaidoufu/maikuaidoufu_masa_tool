@@ -1,5 +1,6 @@
 package cn.maikuaidoufu.client.gui;
 
+import cn.maikuaidoufu.client.verifier.TechUtilsSupport;
 import cn.maikuaidoufu.client.verifier.VerifierExport;
 import cn.maikuaidoufu.client.verifier.VerifierExport.Category;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
@@ -12,7 +13,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -43,7 +43,7 @@ public class GuiVerifierExport extends GuiBase
         this.clearButtons();
         this.boxes.clear();
 
-        boolean techutils = FabricLoader.getInstance().isModLoaded("techutils");
+        boolean techutils = TechUtilsSupport.isAvailable();
         int x = 20;
         int y = 40;
 

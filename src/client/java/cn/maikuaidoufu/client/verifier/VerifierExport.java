@@ -1,8 +1,10 @@
 package cn.maikuaidoufu.client.verifier;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.client.compat.ReflectionSupport;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.BlockMismatch;
+import fi.dy.masa.malilib.util.StringUtils;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -15,16 +17,24 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Collects the Litematica schematic verifier results and writes them to a text
  * file. Container contents come from the optional techutils integration.
+ *
+ * <p>Litematica does not expose the per-position mismatch map publicly, so it
+ * is read reflectively through {@link ReflectionSupport}. If a future version
+ * renames the field, the export falls back to the public aggregated overview
+ * instead of producing an empty file.</p>
  */
 public final class VerifierExport
 {
@@ -38,7 +48,9 @@ public final class VerifierExport
     }
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FILE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final String DIRECTORY = "maikuaidoufu_masa_tool-exports";
+    private static final String KEY_PREFIX = "maikuaidoufu_masa_tool.";
 
     private VerifierExport()
     {
@@ -62,7 +74,7 @@ public final class VerifierExport
             }
 
             List<String> lines = category == Category.CONTAINERS
-                ? TechUtilsBridge.collect(verifier, compressContainers)
+                ? TechUtilsSupport.collect(verifier, compressContainers)
                 : collectBlockMismatches(verifier, category);
 
             if (!lines.isEmpty())
@@ -77,10 +89,10 @@ public final class VerifierExport
         }
 
         StringBuilder out = new StringBuilder();
-        out.append("# 原理图验证导出\n");
-        out.append("# 投影: ").append(placementName == null ? "" : placementName).append('\n');
-        out.append("# 时间: ").append(LocalDateTime.now().format(TIME_FORMAT)).append('\n');
-        out.append("# 类别: ").append(joinNames(categories)).append("\n\n");
+        out.append(translate("export.header.title")).append('\n');
+        out.append(translate("export.header.placement", placementName == null ? "" : placementName)).append('\n');
+        out.append(translate("export.header.time", LocalDateTime.now().format(TIME_FORMAT))).append('\n');
+        out.append(translate("export.header.categories", joinNames(categories))).append("\n\n");
 
         int total = 0;
 
@@ -91,8 +103,7 @@ public final class VerifierExport
             int count = entry.getKey() == Category.CONTAINERS
                 ? (int) lines.stream().filter(line -> line.startsWith("(")).count()
                 : lines.size();
-            out.append("[").append(categoryName(entry.getKey())).append("] 共 ")
-                .append(count).append(" 条\n");
+            out.append(translate("export.section", categoryName(entry.getKey()), count)).append('\n');
 
             for (String line : lines)
             {
@@ -104,7 +115,7 @@ public final class VerifierExport
 
         Path dir = FabricLoader.getInstance().getGameDir().resolve(DIRECTORY);
         Files.createDirectories(dir);
-        Path file = dir.resolve("verifier-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + ".txt");
+        Path file = dir.resolve("verifier-" + LocalDateTime.now().format(FILE_FORMAT) + ".txt");
         Files.writeString(file, out.toString(), StandardCharsets.UTF_8);
         MasaToolMod.LOGGER.info("Exported {} verifier entries to {}", total, file);
         return file;
@@ -112,8 +123,14 @@ public final class VerifierExport
 
     private static List<String> collectBlockMismatches(SchematicVerifier verifier, Category category)
     {
-        List<String> lines = new ArrayList<>();
         Map<BlockPos, BlockMismatch> mismatches = blockMismatches(verifier);
+
+        if (mismatches == null)
+        {
+            return collectOverview(verifier, category);
+        }
+
+        List<String> lines = new ArrayList<>();
         List<BlockPos> positions = new ArrayList<>(mismatches.keySet());
         positions.sort((a, b) ->
         {
@@ -134,7 +151,7 @@ public final class VerifierExport
 
             if (mismatch != null && categoryOf(mismatch.mismatchType) == category)
             {
-                lines.add(String.format("(%d, %d, %d) 期望: %s，实际: %s",
+                lines.add(translate("export.line.mismatch",
                     pos.getX(), pos.getY(), pos.getZ(),
                     stateName(mismatch.stateExpected), stateName(mismatch.stateFound)));
             }
@@ -143,27 +160,63 @@ public final class VerifierExport
         return lines;
     }
 
+    /**
+     * Degraded path: the public overview has no coordinates, but still lists
+     * every state pair and how often it occurs.
+     */
+    private static List<String> collectOverview(SchematicVerifier verifier, Category category)
+    {
+        SchematicVerifier.MismatchType type = mismatchTypeOf(category);
+
+        if (type == null)
+        {
+            return List.of();
+        }
+
+        List<String> lines = new ArrayList<>();
+
+        try
+        {
+            for (BlockMismatch mismatch : verifier.getMismatchOverviewFor(type))
+            {
+                if (mismatch != null)
+                {
+                    lines.add(translate("export.line.summary",
+                        stateName(mismatch.stateExpected), stateName(mismatch.stateFound), mismatch.count));
+                }
+            }
+        }
+        catch (Throwable t)
+        {
+            MasaToolMod.LOGGER.warn("Could not read the verifier overview: {}", t.toString());
+        }
+
+        return lines;
+    }
+
     @SuppressWarnings("unchecked")
     private static Map<BlockPos, BlockMismatch> blockMismatches(SchematicVerifier verifier)
     {
-        try
+        Optional<Field> field = ReflectionSupport.field(SchematicVerifier.class, "blockMismatches");
+
+        if (field.isEmpty())
         {
-            Field field = SchematicVerifier.class.getDeclaredField("blockMismatches");
-            field.setAccessible(true);
-            return (Map<BlockPos, BlockMismatch>) field.get(verifier);
+            return null;
         }
-        catch (ReflectiveOperationException e)
-        {
-            MasaToolMod.LOGGER.warn("Could not read verifier mismatches: {}", e.getMessage());
-            return Map.of();
-        }
+
+        return ReflectionSupport.read(field.get(), verifier, Map.class)
+            .map(value -> (Map<BlockPos, BlockMismatch>) value)
+            .orElse(null);
     }
 
     private static Category categoryOf(SchematicVerifier.MismatchType type)
     {
-        String name = type.name();
+        if (type == null)
+        {
+            return null;
+        }
 
-        return switch (name)
+        return switch (type.name())
         {
             case "MISSING" -> Category.MISSING;
             case "EXTRA" -> Category.EXTRA;
@@ -173,43 +226,52 @@ public final class VerifierExport
         };
     }
 
-    static String stateName(BlockState state)
+    private static SchematicVerifier.MismatchType mismatchTypeOf(Category category)
     {
-        if (state == null)
+        return switch (category)
         {
-            return "未知";
-        }
-
-        return state.toString();
+            case MISSING -> SchematicVerifier.MismatchType.MISSING;
+            case EXTRA -> SchematicVerifier.MismatchType.EXTRA;
+            case WRONG_BLOCK -> SchematicVerifier.MismatchType.WRONG_BLOCK;
+            case WRONG_STATE -> SchematicVerifier.MismatchType.WRONG_STATE;
+            case CONTAINERS -> null;
+        };
     }
 
-    static String itemName(net.minecraft.world.item.ItemStack stack)
+    static String stateName(BlockState state)
+    {
+        return state == null ? translate("export.value.unknown") : state.toString();
+    }
+
+    static String itemName(ItemStack stack)
     {
         if (stack == null || stack.isEmpty())
         {
-            return "空";
+            return translate("export.value.empty");
         }
 
-        return itemLabel(stack.getItem()) + " x" + stack.getCount();
+        return translate("export.value.item", itemLabel(stack.getItem()), stack.getCount());
     }
 
-    static String itemLabel(net.minecraft.world.item.Item item)
+    static String itemLabel(Item item)
     {
         Identifier id = BuiltInRegistries.ITEM.getKey(item);
-        String name = new net.minecraft.world.item.ItemStack(item).getHoverName().getString();
+        String name = new ItemStack(item).getHoverName().getString();
         return name + " (" + id + ")";
     }
 
     static String categoryName(Category category)
     {
-        return switch (category)
+        String suffix = switch (category)
         {
-            case CONTAINERS -> "容器物品不匹配";
-            case MISSING -> "缺失方块";
-            case EXTRA -> "多余方块";
-            case WRONG_BLOCK -> "错误方块";
-            case WRONG_STATE -> "错误状态";
+            case CONTAINERS -> "containers";
+            case MISSING -> "missing";
+            case EXTRA -> "extra";
+            case WRONG_BLOCK -> "wrong_block";
+            case WRONG_STATE -> "wrong_state";
         };
+
+        return translate("verifier.category." + suffix);
     }
 
     private static String joinNames(Set<Category> categories)
@@ -222,5 +284,10 @@ public final class VerifierExport
         }
 
         return String.join(", ", names);
+    }
+
+    private static String translate(String key, Object... args)
+    {
+        return StringUtils.translate(KEY_PREFIX + key, args);
     }
 }

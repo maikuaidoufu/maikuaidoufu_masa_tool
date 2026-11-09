@@ -5,6 +5,7 @@ import dev.kikugie.techutils.feature.containerscan.verifier.BlockMismatchExtensi
 import dev.kikugie.techutils.feature.containerscan.verifier.SchematicVerifierExtension;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.BlockMismatch;
+import fi.dy.masa.malilib.util.StringUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,13 +21,10 @@ import net.minecraft.world.item.ItemStack;
  * Reads the container verification results that techutils adds to the Litematica
  * verifier. This class must only be loaded when techutils is present.
  */
-public final class TechUtilsBridge
+public final class TechUtilsBridgeImpl implements TechUtilsSupport.Bridge
 {
-    private TechUtilsBridge()
-    {
-    }
-
-    public static List<String> collect(SchematicVerifier verifier, boolean compress)
+    @Override
+    public List<String> collect(SchematicVerifier verifier, boolean compress)
     {
         List<String> lines = new ArrayList<>();
         List<BlockMismatch> mismatches;
@@ -63,7 +61,8 @@ public final class TechUtilsBridge
                 if (!body.isEmpty())
                 {
                     BlockPos pos = blockEntity.getBlockPos();
-                    lines.add(String.format("(%d, %d, %d) 容器", pos.getX(), pos.getY(), pos.getZ()));
+                    lines.add(StringUtils.translate("maikuaidoufu_masa_tool.export.line.container",
+                        pos.getX(), pos.getY(), pos.getZ()));
                     lines.addAll(body);
                 }
             }
@@ -88,7 +87,7 @@ public final class TechUtilsBridge
 
             if (want.getItem() != got.getItem() || want.getCount() != got.getCount())
             {
-                lines.add(String.format("    槽位 %d: 期望 %s，实际 %s",
+                lines.add(StringUtils.translate("maikuaidoufu_masa_tool.export.line.slot",
                     slot, VerifierExport.itemName(want), VerifierExport.itemName(got)));
             }
         }
@@ -111,7 +110,7 @@ public final class TechUtilsBridge
 
             if (expectedCount != foundCount)
             {
-                lines.add(String.format("    %s: 期望 x%d，实际 x%d",
+                lines.add(StringUtils.translate("maikuaidoufu_masa_tool.export.line.total",
                     VerifierExport.itemLabel(item), expectedCount, foundCount));
             }
         }

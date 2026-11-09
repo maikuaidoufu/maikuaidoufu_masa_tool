@@ -26,7 +26,8 @@ The jar lands in `build/libs/`. `./gradlew runClient` starts a development clien
 
 MIT, see [LICENSE](LICENSE).
 
-The two jars in `libs/` are third-party dependencies with separate licenses:
+The three jars in `libs/` are third-party dependencies with separate licenses:
 
 - `malilib` 0.28.12 by masa — LGPLv3
 - `litematica` 0.27.14 by masa — LGPLv3
+- `techutils` 0.8.2+26.1 by KikuGie — Unlicense

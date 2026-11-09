@@ -30,7 +30,7 @@ public final class MasaToolClientImpl
             context.client().execute(() -> handleSnapshot(context.client(), payload))
         );
         ClientPlayNetworking.registerGlobalReceiver(PortalEventPayload.TYPE, (payload, context) ->
-            context.client().execute(() -> ClientPortalLog.add(payload.text(), payload.kind()))
+            context.client().execute(() -> ClientPortalLog.add(payload.event()))
         );
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
