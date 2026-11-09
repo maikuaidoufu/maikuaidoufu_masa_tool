@@ -93,5 +93,19 @@
   "maikuaidoufu_masa_tool.message.group_missing": "§cGroup not found.",
   "maikuaidoufu_masa_tool.message.entry_missing": "§cSub-region not found.",
   "maikuaidoufu_masa_tool.message.server_unavailable": "§cThe server does not have Doufu's Masa Tool.",
-  "maikuaidoufu_masa_tool.message.protocol_mismatch": "§cClient/server protocol mismatch for Doufu's Masa Tool."
+  "maikuaidoufu_masa_tool.message.protocol_mismatch": "§cClient/server protocol mismatch for Doufu's Masa Tool.",
+  "maikuaidoufu_masa_tool.config.name.verifier_export": "Verifier export",
+  "maikuaidoufu_masa_tool.config.comment.verifier_export": "Show an export button in the Litematica schematic verifier (container contents need techutils)",
+  "maikuaidoufu_masa_tool.button.export_verifier": "Export results",
+  "maikuaidoufu_masa_tool.button.export": "Export",
+  "maikuaidoufu_masa_tool.title.verifier_export": "Export verifier results",
+  "maikuaidoufu_masa_tool.verifier.category.containers": "Container contents",
+  "maikuaidoufu_masa_tool.verifier.category.missing": "Missing blocks",
+  "maikuaidoufu_masa_tool.verifier.category.extra": "Extra blocks",
+  "maikuaidoufu_masa_tool.verifier.category.wrong_block": "Wrong blocks",
+  "maikuaidoufu_masa_tool.verifier.category.wrong_state": "Wrong states",
+  "maikuaidoufu_masa_tool.verifier.category.diff_block": "Different blocks",
+  "maikuaidoufu_masa_tool.verifier.message.exported": "Exported to %s",
+  "maikuaidoufu_masa_tool.verifier.message.failed": "Export failed: %s",
+  "maikuaidoufu_masa_tool.verifier.message.none": "Nothing to export for the selected categories"
 }

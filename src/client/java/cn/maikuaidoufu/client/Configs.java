@@ -38,8 +38,14 @@ public final class Configs implements IConfigHandler
         "maikuaidoufu_masa_tool.config.name.open_gui",
         "maikuaidoufu_masa_tool.config.name.open_gui");
     public static final ConfigBoolean RENDER_HIGHLIGHTS = new ConfigBoolean("renderHighlights", true);
+    public static final ConfigBoolean VERIFIER_EXPORT = new ConfigBoolean(
+        "verifierExport",
+        true,
+        "maikuaidoufu_masa_tool.config.comment.verifier_export",
+        "maikuaidoufu_masa_tool.config.name.verifier_export",
+        "maikuaidoufu_masa_tool.config.name.verifier_export");
 
-    public static final List<IConfigBase> OPTIONS = List.of(RENDER_HIGHLIGHTS);
+    public static final List<IConfigBase> OPTIONS = List.of(RENDER_HIGHLIGHTS, VERIFIER_EXPORT);
 
     private Configs()
     {

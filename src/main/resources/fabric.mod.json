@@ -25,11 +25,13 @@
     "minecraft": "~26.1",
     "fabric-api-base": ">=2.0.3",
     "fabric-lifecycle-events-v1": ">=4.1.1",
-    "fabric-networking-api-v1": ">=6.3.2"
+    "fabric-networking-api-v1": ">=6.3.2",
+    "fabric-screen-api-v1": ">=5.1.0"
   },
   "recommends": {
     "malilib": ">=0.28.12",
-    "litematica": ">=0.27.14"
+    "litematica": ">=0.27.14",
+    "techutils": "*"
   },
   "suggests": {
     "syncmatica": "*"

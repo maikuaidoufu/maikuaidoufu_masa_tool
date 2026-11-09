@@ -6,6 +6,12 @@ the game linked an existing portal or built a new one. Groups and sub-regions ar
 stored on the server, and the interface runs on MaLiLib. Regions can also be imported
 from Litematica placements or area selections.
 
+With techutils installed, the schematic verifier screen also gains an export
+button: pick the categories, and the mismatched blocks, missing/extra blocks and
+container slot differences are written to a text file under
+`maikuaidoufu_masa_tool-exports/`, one line per position with the expected and
+actual value.
+
 ## Build
 
 Requires JDK 25.
