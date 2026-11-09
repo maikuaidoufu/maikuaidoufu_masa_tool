@@ -104,8 +104,11 @@
   "maikuaidoufu_masa_tool.verifier.category.extra": "Extra blocks",
   "maikuaidoufu_masa_tool.verifier.category.wrong_block": "Wrong blocks",
   "maikuaidoufu_masa_tool.verifier.category.wrong_state": "Wrong states",
-  "maikuaidoufu_masa_tool.verifier.category.diff_block": "Different blocks",
   "maikuaidoufu_masa_tool.verifier.message.exported": "Exported to %s",
   "maikuaidoufu_masa_tool.verifier.message.failed": "Export failed: %s",
-  "maikuaidoufu_masa_tool.verifier.message.none": "Nothing to export for the selected categories"
+  "maikuaidoufu_masa_tool.verifier.message.none": "Nothing to export for the selected categories",
+  "maikuaidoufu_masa_tool.tab.general": "General",
+  "maikuaidoufu_masa_tool.title.general": "General",
+  "maikuaidoufu_masa_tool.button.verifier_export_toggle": "Verifier export: %s",
+  "maikuaidoufu_masa_tool.general.version": "Version %s"
 }

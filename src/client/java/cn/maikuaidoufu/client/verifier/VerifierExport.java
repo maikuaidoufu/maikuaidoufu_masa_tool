@@ -34,8 +34,7 @@ public final class VerifierExport
         MISSING,
         EXTRA,
         WRONG_BLOCK,
-        WRONG_STATE,
-        DIFF_BLOCK
+        WRONG_STATE
     }
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -88,8 +87,11 @@ public final class VerifierExport
         {
             List<String> lines = entry.getValue();
             total += lines.size();
+            int count = entry.getKey() == Category.CONTAINERS
+                ? (int) lines.stream().filter(line -> line.startsWith("(")).count()
+                : lines.size();
             out.append("[").append(categoryName(entry.getKey())).append("] 共 ")
-                .append(lines.size()).append(" 条\n");
+                .append(count).append(" 条\n");
 
             for (String line : lines)
             {
@@ -166,7 +168,6 @@ public final class VerifierExport
             case "EXTRA" -> Category.EXTRA;
             case "WRONG_BLOCK" -> Category.WRONG_BLOCK;
             case "WRONG_STATE" -> Category.WRONG_STATE;
-            case "DIFF_BLOCK" -> Category.DIFF_BLOCK;
             default -> null;
         };
     }
@@ -201,7 +202,6 @@ public final class VerifierExport
             case EXTRA -> "多余方块";
             case WRONG_BLOCK -> "错误方块";
             case WRONG_STATE -> "错误状态";
-            case DIFF_BLOCK -> "差异方块";
         };
     }
 

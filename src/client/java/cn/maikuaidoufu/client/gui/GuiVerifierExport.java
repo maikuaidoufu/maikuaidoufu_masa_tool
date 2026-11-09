@@ -120,7 +120,6 @@ public class GuiVerifierExport extends GuiBase
             case EXTRA -> "maikuaidoufu_masa_tool.verifier.category.extra";
             case WRONG_BLOCK -> "maikuaidoufu_masa_tool.verifier.category.wrong_block";
             case WRONG_STATE -> "maikuaidoufu_masa_tool.verifier.category.wrong_state";
-            case DIFF_BLOCK -> "maikuaidoufu_masa_tool.verifier.category.diff_block";
         };
     }
 }

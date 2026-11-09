@@ -104,8 +104,11 @@
   "maikuaidoufu_masa_tool.verifier.category.extra": "多余方块",
   "maikuaidoufu_masa_tool.verifier.category.wrong_block": "错误方块",
   "maikuaidoufu_masa_tool.verifier.category.wrong_state": "错误状态",
-  "maikuaidoufu_masa_tool.verifier.category.diff_block": "差异方块",
   "maikuaidoufu_masa_tool.verifier.message.exported": "已导出到 %s",
   "maikuaidoufu_masa_tool.verifier.message.failed": "导出失败：%s",
-  "maikuaidoufu_masa_tool.verifier.message.none": "所选类别没有可导出的结果"
+  "maikuaidoufu_masa_tool.verifier.message.none": "所选类别没有可导出的结果",
+  "maikuaidoufu_masa_tool.tab.general": "通用",
+  "maikuaidoufu_masa_tool.title.general": "通用",
+  "maikuaidoufu_masa_tool.button.verifier_export_toggle": "验证结果导出: %s",
+  "maikuaidoufu_masa_tool.general.version": "版本 %s"
 }

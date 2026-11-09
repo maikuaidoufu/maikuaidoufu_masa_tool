@@ -1,6 +1,8 @@
 package cn.maikuaidoufu.client.verifier;
 
+import cn.maikuaidoufu.MasaToolMod;
 import dev.kikugie.techutils.feature.containerscan.verifier.BlockMismatchExtension;
+import dev.kikugie.techutils.feature.containerscan.verifier.SchematicVerifierExtension;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.BlockMismatch;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.MismatchType;
@@ -23,12 +25,7 @@ public final class TechUtilsBridge
     public static List<String> collect(SchematicVerifier verifier)
     {
         List<String> lines = new ArrayList<>();
-        MismatchType type = wrongInventoriesType();
-
-        if (type == null)
-        {
-            return lines;
-        }
+        MismatchType type = SchematicVerifierExtension.WRONG_INVENTORIES;
 
         List<BlockMismatch> mismatches;
 
@@ -38,6 +35,7 @@ public final class TechUtilsBridge
         }
         catch (Throwable t)
         {
+            MasaToolMod.LOGGER.warn("Could not read container mismatches: {}", t.toString());
             return lines;
         }
 
@@ -81,24 +79,14 @@ public final class TechUtilsBridge
                     lines.addAll(slotLines);
                 }
             }
-            catch (Throwable ignored)
+            catch (Throwable t)
             {
+                MasaToolMod.LOGGER.warn("Could not export a container mismatch: {}", t.toString());
             }
         }
 
         return lines;
     }
 
-    private static MismatchType wrongInventoriesType()
-    {
-        for (MismatchType type : MismatchType.values())
-        {
-            if (type.name().equals("WRONG_INVENTORIES"))
-            {
-                return type;
-            }
-        }
 
-        return null;
-    }
 }
