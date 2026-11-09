@@ -8,7 +8,6 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
@@ -62,6 +61,8 @@ public final class MasaToolClientImpl
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->
         {
+            VerifierGuiHook.onClientTick(client);
+
             if (retriesLeft <= 0 || ClientGroupStore.isConnected())
             {
                 return;
@@ -79,9 +80,6 @@ public final class MasaToolClientImpl
         });
 
         RenderEventHandler.getInstance().registerWorldLastRenderer(new RegionHighlightRenderer());
-
-        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) ->
-            VerifierGuiHook.onScreen(screen, scaledWidth, scaledHeight));
 
         MasaToolMod.LOGGER.info("Doufu's Masa Tool client initialized");
     }

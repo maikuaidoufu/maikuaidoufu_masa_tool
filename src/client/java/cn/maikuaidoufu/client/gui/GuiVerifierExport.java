@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -24,11 +25,12 @@ public class GuiVerifierExport extends GuiBase
     private final String placementName;
     private final Map<Category, WidgetExportCheckbox> boxes = new EnumMap<>(Category.class);
 
-    public GuiVerifierExport(SchematicVerifier verifier, String placementName)
+    public GuiVerifierExport(SchematicVerifier verifier, String placementName, Screen parent)
     {
         this.verifier = verifier;
         this.placementName = placementName == null ? "" : placementName;
         this.setTitle(StringUtils.translate("maikuaidoufu_masa_tool.title.verifier_export"));
+        this.setParent(parent);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class GuiVerifierExport extends GuiBase
             (button, mouseButton) -> this.doExport());
         this.addButton(new ButtonGeneric(x + 96, buttonY, 90, 20,
                 StringUtils.translate("maikuaidoufu_masa_tool.button.cancel")),
-            (button, mouseButton) -> this.closeGui(false));
+            (button, mouseButton) -> this.closeGui(true));
     }
 
     private void doExport()
@@ -96,7 +98,7 @@ public class GuiVerifierExport extends GuiBase
             message("maikuaidoufu_masa_tool.verifier.message.failed", e.getMessage());
         }
 
-        this.closeGui(false);
+        this.closeGui(true);
     }
 
     private static void message(String key, Object... args)
