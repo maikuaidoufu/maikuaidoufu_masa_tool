@@ -1,5 +1,6 @@
 package cn.maikuaidoufu.client.gui;
 
+import cn.maikuaidoufu.client.ClientActions;
 import cn.maikuaidoufu.client.ClientGroupStore;
 import cn.maikuaidoufu.client.Configs;
 import cn.maikuaidoufu.client.GroupStoreListener;
@@ -43,6 +44,12 @@ public final class GuiGroupList
         clearButtons();
         GuiTabs.add(this, GuiTabs.Tab.GROUPS, 26);
         createTopButtons();
+
+        if (!ClientGroupStore.isConnected())
+        {
+            ClientActions.requestSnapshot();
+        }
+
         setListPosition(12, 64);
         reCreateListWidget();
         getListWidget().refreshEntries();
