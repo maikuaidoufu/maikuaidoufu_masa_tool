@@ -5,11 +5,15 @@ import dev.kikugie.techutils.feature.containerscan.verifier.BlockMismatchExtensi
 import dev.kikugie.techutils.feature.containerscan.verifier.SchematicVerifierExtension;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.BlockMismatch;
-import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier.MismatchType;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -22,16 +26,14 @@ public final class TechUtilsBridge
     {
     }
 
-    public static List<String> collect(SchematicVerifier verifier)
+    public static List<String> collect(SchematicVerifier verifier, boolean compress)
     {
         List<String> lines = new ArrayList<>();
-        MismatchType type = SchematicVerifierExtension.WRONG_INVENTORIES;
-
         List<BlockMismatch> mismatches;
 
         try
         {
-            mismatches = verifier.getMismatchOverviewFor(type);
+            mismatches = verifier.getMismatchOverviewFor(SchematicVerifierExtension.WRONG_INVENTORIES);
         }
         catch (Throwable t)
         {
@@ -56,27 +58,13 @@ public final class TechUtilsBridge
                     continue;
                 }
 
-                List<String> slotLines = new ArrayList<>();
-                int size = Math.min(expected.getContainerSize(), found.getContainerSize());
+                List<String> body = compress ? compressedLines(expected, found) : slotLines(expected, found);
 
-                for (int slot = 0; slot < size; slot++)
-                {
-                    ItemStack want = expected.getItem(slot);
-                    ItemStack got = found.getItem(slot);
-
-                    if (want.getItem() != got.getItem() || want.getCount() != got.getCount())
-                    {
-                        slotLines.add(String.format("    槽位 %d: 期望 %s，实际 %s",
-                            slot, VerifierExport.itemName(want), VerifierExport.itemName(got)));
-                    }
-                }
-
-                if (!slotLines.isEmpty())
+                if (!body.isEmpty())
                 {
                     BlockPos pos = blockEntity.getBlockPos();
-                    lines.add(String.format("(%d, %d, %d) 容器",
-                        pos.getX(), pos.getY(), pos.getZ()));
-                    lines.addAll(slotLines);
+                    lines.add(String.format("(%d, %d, %d) 容器", pos.getX(), pos.getY(), pos.getZ()));
+                    lines.addAll(body);
                 }
             }
             catch (Throwable t)
@@ -88,5 +76,63 @@ public final class TechUtilsBridge
         return lines;
     }
 
+    private static List<String> slotLines(Container expected, Container found)
+    {
+        List<String> lines = new ArrayList<>();
+        int size = Math.min(expected.getContainerSize(), found.getContainerSize());
 
+        for (int slot = 0; slot < size; slot++)
+        {
+            ItemStack want = expected.getItem(slot);
+            ItemStack got = found.getItem(slot);
+
+            if (want.getItem() != got.getItem() || want.getCount() != got.getCount())
+            {
+                lines.add(String.format("    槽位 %d: 期望 %s，实际 %s",
+                    slot, VerifierExport.itemName(want), VerifierExport.itemName(got)));
+            }
+        }
+
+        return lines;
+    }
+
+    private static List<String> compressedLines(Container expected, Container found)
+    {
+        Map<Item, Integer> want = counts(expected);
+        Map<Item, Integer> got = counts(found);
+        Set<Item> items = new LinkedHashSet<>(want.keySet());
+        items.addAll(got.keySet());
+        List<String> lines = new ArrayList<>();
+
+        for (Item item : items)
+        {
+            int expectedCount = want.getOrDefault(item, 0);
+            int foundCount = got.getOrDefault(item, 0);
+
+            if (expectedCount != foundCount)
+            {
+                lines.add(String.format("    %s: 期望 x%d，实际 x%d",
+                    VerifierExport.itemLabel(item), expectedCount, foundCount));
+            }
+        }
+
+        return lines;
+    }
+
+    private static Map<Item, Integer> counts(Container container)
+    {
+        Map<Item, Integer> counts = new LinkedHashMap<>();
+
+        for (int slot = 0; slot < container.getContainerSize(); slot++)
+        {
+            ItemStack stack = container.getItem(slot);
+
+            if (!stack.isEmpty())
+            {
+                counts.merge(stack.getItem(), stack.getCount(), Integer::sum);
+            }
+        }
+
+        return counts;
+    }
 }

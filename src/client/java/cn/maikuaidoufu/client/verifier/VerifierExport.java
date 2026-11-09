@@ -48,7 +48,8 @@ public final class VerifierExport
      * Writes the export file and returns it, or null when the selected
      * categories have no results.
      */
-    public static Path export(SchematicVerifier verifier, String placementName, Set<Category> categories)
+    public static Path export(SchematicVerifier verifier, String placementName, Set<Category> categories,
+                               boolean compressContainers)
         throws IOException
     {
         Map<Category, List<String>> sections = new LinkedHashMap<>();
@@ -61,7 +62,7 @@ public final class VerifierExport
             }
 
             List<String> lines = category == Category.CONTAINERS
-                ? TechUtilsBridge.collect(verifier)
+                ? TechUtilsBridge.collect(verifier, compressContainers)
                 : collectBlockMismatches(verifier, category);
 
             if (!lines.isEmpty())
@@ -189,8 +190,14 @@ public final class VerifierExport
             return "空";
         }
 
-        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        return id + " x" + stack.getCount();
+        return itemLabel(stack.getItem()) + " x" + stack.getCount();
+    }
+
+    static String itemLabel(net.minecraft.world.item.Item item)
+    {
+        Identifier id = BuiltInRegistries.ITEM.getKey(item);
+        String name = new net.minecraft.world.item.ItemStack(item).getHoverName().getString();
+        return name + " (" + id + ")";
     }
 
     static String categoryName(Category category)

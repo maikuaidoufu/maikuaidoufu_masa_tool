@@ -110,5 +110,7 @@
   "maikuaidoufu_masa_tool.tab.general": "General",
   "maikuaidoufu_masa_tool.title.general": "General",
   "maikuaidoufu_masa_tool.button.verifier_export_toggle": "Verifier export: %s",
-  "maikuaidoufu_masa_tool.general.version": "Version %s"
+  "maikuaidoufu_masa_tool.general.version": "Version %s",
+  "maikuaidoufu_masa_tool.button.compress_container": "Compress: %s",
+  "maikuaidoufu_masa_tool.hover.ignore_slots": "Ignore slots, only count totals per item"
 }

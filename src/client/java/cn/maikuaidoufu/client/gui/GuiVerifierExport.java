@@ -5,6 +5,7 @@ import cn.maikuaidoufu.client.verifier.VerifierExport.Category;
 import fi.dy.masa.litematica.schematic.verifier.SchematicVerifier;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
+import fi.dy.masa.malilib.gui.button.ButtonOnOff;
 import fi.dy.masa.malilib.util.StringUtils;
 import java.nio.file.Path;
 import java.util.EnumMap;
@@ -24,6 +25,7 @@ public class GuiVerifierExport extends GuiBase
     private final SchematicVerifier verifier;
     private final String placementName;
     private final Map<Category, WidgetExportCheckbox> boxes = new EnumMap<>(Category.class);
+    private static boolean compressContainers;
 
     public GuiVerifierExport(SchematicVerifier verifier, String placementName, Screen parent)
     {
@@ -56,6 +58,19 @@ public class GuiVerifierExport extends GuiBase
                 StringUtils.translate(keyFor(category)), true);
             this.addWidget(box);
             this.boxes.put(category, box);
+
+            if (category == Category.CONTAINERS)
+            {
+                ButtonOnOff compress = new ButtonOnOff(290, y - 2, -1, false,
+                    "maikuaidoufu_masa_tool.button.compress_container", compressContainers);
+                compress.setHoverStrings(StringUtils.translate("maikuaidoufu_masa_tool.hover.ignore_slots"));
+                this.addButton(compress, (button, mouseButton) ->
+                {
+                    compressContainers = !compressContainers;
+                    initGui();
+                });
+            }
+
             y += 20;
         }
 
@@ -82,7 +97,7 @@ public class GuiVerifierExport extends GuiBase
 
         try
         {
-            Path file = VerifierExport.export(this.verifier, this.placementName, selected);
+            Path file = VerifierExport.export(this.verifier, this.placementName, selected, compressContainers);
 
             if (file == null)
             {
