@@ -143,5 +143,10 @@
   "maikuaidoufu_masa_tool.portal.log.reason.radius": "No portal within %s blocks in the target dimension",
   "maikuaidoufu_masa_tool.portal.log.reason.no_portal": "No linkable portal in the target dimension",
   "maikuaidoufu_masa_tool.portal.log.failure.border": "Could not create a portal (destination outside the world border)",
-  "maikuaidoufu_masa_tool.portal.log.suppressed": "%s more entries from the last tick were not shown"
+  "maikuaidoufu_masa_tool.portal.log.suppressed": "%s more entries from the last tick were not shown",
+
+  "maikuaidoufu_masa_tool.config.name.xray_render": "X-ray render",
+  "maikuaidoufu_masa_tool.config.comment.xray_render": "When enabled, region outlines render through blocks; when disabled, blocks occlude them",
+  "maikuaidoufu_masa_tool.button.xray_render": "X-ray render: %s",
+  "maikuaidoufu_masa_tool.hover.xray_render": "Draw region outlines on top of the world instead of hiding them behind blocks"
 }

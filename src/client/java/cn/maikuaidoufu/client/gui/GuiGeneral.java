@@ -35,8 +35,19 @@ public class GuiGeneral extends GuiBase
             initGui();
         });
 
-        this.addLabel(12, 84, 240, 12, 0xFFAAAAAA, "by maikuaidoufu");
-        this.addLabel(12, 100, 240, 12, 0xFFAAAAAA,
+        ButtonOnOff xray = new ButtonOnOff(12, 76, -1, false,
+            "maikuaidoufu_masa_tool.button.xray_render",
+            Configs.XRAY_HIGHLIGHTS.getBooleanValue());
+        xray.setHoverStrings(StringUtils.translate("maikuaidoufu_masa_tool.hover.xray_render"));
+        this.addButton(xray, (button, mouseButton) ->
+        {
+            Configs.XRAY_HIGHLIGHTS.setBooleanValue(!Configs.XRAY_HIGHLIGHTS.getBooleanValue());
+            Configs.saveConfig();
+            initGui();
+        });
+
+        this.addLabel(12, 108, 240, 12, 0xFFAAAAAA, "by maikuaidoufu");
+        this.addLabel(12, 124, 240, 12, 0xFFAAAAAA,
             StringUtils.translate("maikuaidoufu_masa_tool.general.version", version()));
     }
 

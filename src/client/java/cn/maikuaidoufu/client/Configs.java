@@ -44,8 +44,15 @@ public final class Configs implements IConfigHandler
         "maikuaidoufu_masa_tool.config.comment.verifier_export",
         "maikuaidoufu_masa_tool.config.name.verifier_export",
         "maikuaidoufu_masa_tool.config.name.verifier_export");
+    public static final ConfigBoolean XRAY_HIGHLIGHTS = new ConfigBoolean(
+        "xrayHighlights",
+        false,
+        "maikuaidoufu_masa_tool.config.comment.xray_render",
+        "maikuaidoufu_masa_tool.config.name.xray_render",
+        "maikuaidoufu_masa_tool.config.name.xray_render");
 
-    public static final List<IConfigBase> OPTIONS = List.of(RENDER_HIGHLIGHTS, VERIFIER_EXPORT);
+    public static final List<IConfigBase> OPTIONS =
+        List.of(RENDER_HIGHLIGHTS, XRAY_HIGHLIGHTS, VERIFIER_EXPORT);
 
     private Configs()
     {
