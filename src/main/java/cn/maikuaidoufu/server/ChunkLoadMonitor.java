@@ -6,6 +6,7 @@ import cn.maikuaidoufu.net.ChunkWatchStatePayload;
 import cn.maikuaidoufu.region.RegionLimits;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,23 @@ import net.minecraft.server.level.ServerPlayer;
  * Server-side watch list for chunk loading-level changes.
  *
  * <p>Only chunks explicitly watched by a subscribed player are reported, so the
- * mixin can bail out before touching the ticket storage in the common case.</p>
+ * mixin can bail out before touching the ticket storage in the common case.
+ * A per-chunk ticket snapshot keeps the exact added/removed tickets between two
+ * reported tier changes.</p>
  */
 public final class ChunkLoadMonitor
 {
+    private static final int MAX_SNAPSHOTS = 2048;
+
     private static final Map<UUID, WatchState> STATES = new HashMap<>();
+    private static final Map<ChunkKey, Map<String, Integer>> TICKET_SNAPSHOTS = new HashMap<>();
     private static volatile boolean anySubscribed;
 
     private ChunkLoadMonitor()
+    {
+    }
+
+    public record TicketDiff(List<String> added, List<String> removed)
     {
     }
 
@@ -75,8 +85,63 @@ public final class ChunkLoadMonitor
         return false;
     }
 
+    public static boolean isTierChange(int oldLevel, int newLevel)
+    {
+        return ChunkLevel.fullStatus(oldLevel) != ChunkLevel.fullStatus(newLevel);
+    }
+
+    /**
+     * Updates the ticket snapshot for a watched chunk and returns the tickets
+     * added/removed since the previous reported tier change. The first
+     * observation only establishes a baseline (no diff).
+     */
+    public static TicketDiff applyTickets(String dimension, int x, int z, List<String> current)
+    {
+        ChunkKey key = new ChunkKey(dimension, x, z);
+        Map<String, Integer> now = counts(current);
+
+        synchronized (TICKET_SNAPSHOTS)
+        {
+            if (TICKET_SNAPSHOTS.size() >= MAX_SNAPSHOTS)
+            {
+                TICKET_SNAPSHOTS.clear();
+            }
+
+            Map<String, Integer> previous = TICKET_SNAPSHOTS.put(key, now);
+
+            if (previous == null)
+            {
+                return new TicketDiff(List.of(), List.of());
+            }
+
+            List<String> added = new ArrayList<>();
+            List<String> removed = new ArrayList<>();
+            Set<String> keys = new HashSet<>(previous.keySet());
+            keys.addAll(now.keySet());
+
+            for (String ticket : keys)
+            {
+                int before = previous.getOrDefault(ticket, 0);
+                int after = now.getOrDefault(ticket, 0);
+
+                for (int i = before; i < after; i++)
+                {
+                    added.add(ticket);
+                }
+
+                for (int i = after; i < before; i++)
+                {
+                    removed.add(ticket);
+                }
+            }
+
+            return new TicketDiff(List.copyOf(added), List.copyOf(removed));
+        }
+    }
+
     public static void onLevelChange(ServerLevel level, String dimension, int x, int z,
-                                      int oldLevel, int newLevel, List<String> tickets)
+                                      int oldLevel, int newLevel, List<String> tickets,
+                                      List<String> added, List<String> removed)
     {
         if (!anySubscribed || oldLevel == newLevel)
         {
@@ -101,7 +166,7 @@ public final class ChunkLoadMonitor
 
         ChunkKey key = new ChunkKey(dimension, x, z);
         ChunkLevelEvent event = new ChunkLevelEvent(dimension, x, z, oldLevel, newLevel,
-            oldStatus.name(), newStatus.name(), tickets, level.getGameTime());
+            oldStatus.name(), newStatus.name(), tickets, added, removed, level.getGameTime());
         ChunkLevelEventPayload payload = new ChunkLevelEventPayload(event);
 
         for (ServerPlayer player : server.getPlayerList().getPlayers())
@@ -135,17 +200,25 @@ public final class ChunkLoadMonitor
             return;
         }
 
+        boolean added;
+
         synchronized (STATES)
         {
             WatchState state = state(player);
             state.enabled = true;
-
-            if (state.watches.size() < ChunkWatchStatePayload.MAX_WATCHES)
-            {
-                state.watches.add(new ChunkKey(dimension, x, z));
-            }
-
+            added = state.watches.size() < ChunkWatchStatePayload.MAX_WATCHES
+                && state.watches.add(new ChunkKey(dimension, x, z));
             refreshFlag();
+        }
+
+        if (added)
+        {
+            // Re-watching a chunk starts from a fresh ticket baseline, so a
+            // stale snapshot cannot report changes from the previous watch.
+            synchronized (TICKET_SNAPSHOTS)
+            {
+                TICKET_SNAPSHOTS.remove(new ChunkKey(dimension, x, z));
+            }
         }
     }
 
@@ -184,6 +257,11 @@ public final class ChunkLoadMonitor
             STATES.clear();
             anySubscribed = false;
         }
+
+        synchronized (TICKET_SNAPSHOTS)
+        {
+            TICKET_SNAPSHOTS.clear();
+        }
     }
 
     public static ChunkWatchStatePayload statePayload(ServerPlayer player)
@@ -211,6 +289,18 @@ public final class ChunkLoadMonitor
 
             return new ChunkWatchStatePayload(state.enabled, entries);
         }
+    }
+
+    private static Map<String, Integer> counts(List<String> tickets)
+    {
+        Map<String, Integer> counts = new HashMap<>();
+
+        for (String ticket : tickets)
+        {
+            counts.merge(ticket, 1, Integer::sum);
+        }
+
+        return counts;
     }
 
     private static boolean isWatching(UUID playerId, ChunkKey key)

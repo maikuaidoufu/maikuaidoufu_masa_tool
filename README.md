@@ -16,9 +16,11 @@ The "Chunk loading" tab watches selected chunks on the server. Add chunk
 coordinates (or click "Current chunk"), enable the subscription, and the tab
 logs every transition between the four loading tiers: entity ticking (strong),
 block ticking, loaded-only (weak), and unloaded. Each line includes the old and
-new ticket levels plus the ticket types currently keeping the chunk loaded
-(player simulation, `/forceload`, portals, ender pearls and so on). Only watched
-chunks are reported, so an empty watch list costs almost nothing on the server.
+new ticket levels and the exact tickets added or removed since the previous tier
+change (player simulation, `/forceload`, portals, ender pearls and so on), plus
+the tickets currently in effect. A per-chunk ticket snapshot makes that diff
+possible; only watched chunks are reported, so an empty watch list costs almost
+nothing on the server.
 
 ## Build
 

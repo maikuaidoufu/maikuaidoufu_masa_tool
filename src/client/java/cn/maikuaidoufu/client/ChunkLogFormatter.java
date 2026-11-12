@@ -29,7 +29,7 @@ public final class ChunkLogFormatter
             event.chunkX(), event.chunkZ(),
             status(event.oldStatus()), event.oldLevel(),
             status(event.newStatus()), event.newLevel(),
-            cause(event.tickets()));
+            cause(event));
     }
 
     /**
@@ -38,6 +38,55 @@ public final class ChunkLogFormatter
     public static int direction(ChunkLevelEvent event)
     {
         return Integer.compare(rank(event.newStatus()), rank(event.oldStatus()));
+    }
+
+    private static String cause(ChunkLevelEvent event)
+    {
+        List<String> parts = new ArrayList<>();
+
+        if (!event.addedTickets().isEmpty())
+        {
+            parts.add(translate("cause.added", ticketList(event.addedTickets())));
+        }
+
+        if (!event.removedTickets().isEmpty())
+        {
+            parts.add(translate("cause.removed", ticketList(event.removedTickets())));
+        }
+
+        if (parts.isEmpty())
+        {
+            parts.add(translate("cause.unchanged"));
+        }
+
+        parts.add(translate("cause.current", ticketList(event.tickets())));
+        return String.join(" · ", parts);
+    }
+
+    private static String ticketList(List<String> tickets)
+    {
+        if (tickets.isEmpty())
+        {
+            return translate("cause.no_tickets");
+        }
+
+        List<String> parts = new ArrayList<>(tickets.size());
+
+        for (String ticket : tickets)
+        {
+            parts.add(formatTicket(ticket));
+        }
+
+        return String.join(", ", parts);
+    }
+
+    private static String formatTicket(String ticket)
+    {
+        int separator = ticket.lastIndexOf(':');
+        String id = separator > 0 ? ticket.substring(0, separator) : ticket;
+        String level = separator > 0 ? ticket.substring(separator + 1) : "?";
+        String path = id.contains(":") ? id.substring(id.indexOf(':') + 1) : id;
+        return translate("ticket.item", ticketName(path), level);
     }
 
     private static int rank(String status)
@@ -77,27 +126,6 @@ public final class ChunkLogFormatter
         return suffix == null
             ? id
             : StringUtils.translate(MOD_PREFIX + "portal.log.dimension." + suffix);
-    }
-
-    private static String cause(List<String> tickets)
-    {
-        if (tickets.isEmpty())
-        {
-            return translate("reason.none");
-        }
-
-        List<String> parts = new ArrayList<>(tickets.size());
-
-        for (String ticket : tickets)
-        {
-            int separator = ticket.lastIndexOf(':');
-            String id = separator > 0 ? ticket.substring(0, separator) : ticket;
-            String level = separator > 0 ? ticket.substring(separator + 1) : "?";
-            String path = id.contains(":") ? id.substring(id.indexOf(':') + 1) : id;
-            parts.add(translate("ticket.item", ticketName(path), level));
-        }
-
-        return String.join(", ", parts);
     }
 
     private static String ticketName(String path)

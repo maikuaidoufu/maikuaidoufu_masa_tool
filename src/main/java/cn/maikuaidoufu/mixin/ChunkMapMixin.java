@@ -20,11 +20,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Observes chunk ticket-level changes so watched chunks can be reported with
- * the tickets that currently keep them loaded.
+ * the exact tickets added or removed since the previous tier change.
  */
 @Mixin(ChunkMap.class)
 public abstract class ChunkMapMixin
 {
+    private static final int MAX_TICKETS = 32;
+
     @Shadow
     @Final
     private ServerLevel level;
@@ -46,7 +48,8 @@ public abstract class ChunkMapMixin
         int chunkZ = ChunkPos.getZ(pos);
         String dimension = this.level.dimension().identifier().toString();
 
-        if (!ChunkLoadMonitor.isWatched(dimension, chunkX, chunkZ))
+        if (!ChunkLoadMonitor.isWatched(dimension, chunkX, chunkZ)
+            || !ChunkLoadMonitor.isTierChange(oldLevel, newLevel))
         {
             return;
         }
@@ -59,6 +62,11 @@ public abstract class ChunkMapMixin
             {
                 Identifier id = BuiltInRegistries.TICKET_TYPE.getKey(ticket.getType());
                 tickets.add((id == null ? "unknown" : id.toString()) + ":" + ticket.getTicketLevel());
+
+                if (tickets.size() >= MAX_TICKETS)
+                {
+                    break;
+                }
             }
         }
         catch (Throwable ignored)
@@ -66,7 +74,10 @@ public abstract class ChunkMapMixin
             // Ticket storage is an implementation detail; never break chunk scheduling.
         }
 
+        ChunkLoadMonitor.TicketDiff diff =
+            ChunkLoadMonitor.applyTickets(dimension, chunkX, chunkZ, tickets);
+
         ChunkLoadMonitor.onLevelChange(this.level, dimension, chunkX, chunkZ,
-            oldLevel, newLevel, tickets);
+            oldLevel, newLevel, tickets, diff.added(), diff.removed());
     }
 }

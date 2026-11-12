@@ -29,7 +29,8 @@ public record ChunkLevelEventPayload(ChunkLevelEvent event) implements CustomPac
     public ChunkLevelEventPayload
     {
         event = event == null
-            ? new ChunkLevelEvent("", 0, 0, 0, 0, "", "", List.of(), 0L)
+            ? new ChunkLevelEvent("", 0, 0, 0, 0, "", "",
+                List.of(), List.of(), List.of(), 0L)
             : event;
     }
 
@@ -43,13 +44,9 @@ public record ChunkLevelEventPayload(ChunkLevelEvent event) implements CustomPac
         buf.writeVarInt(e.newLevel());
         buf.writeUtf(e.oldStatus(), MAX_STATUS_BYTES);
         buf.writeUtf(e.newStatus(), MAX_STATUS_BYTES);
-        buf.writeVarInt(e.tickets().size());
-
-        for (String ticket : e.tickets())
-        {
-            buf.writeUtf(ticket, MAX_TEXT_BYTES);
-        }
-
+        writeTickets(buf, e.tickets());
+        writeTickets(buf, e.addedTickets());
+        writeTickets(buf, e.removedTickets());
         buf.writeLong(e.gameTime());
     }
 
@@ -62,6 +59,28 @@ public record ChunkLevelEventPayload(ChunkLevelEvent event) implements CustomPac
         int newLevel = buf.readVarInt();
         String oldStatus = buf.readUtf(MAX_STATUS_BYTES);
         String newStatus = buf.readUtf(MAX_STATUS_BYTES);
+        List<String> tickets = readTickets(buf);
+        List<String> added = readTickets(buf);
+        List<String> removed = readTickets(buf);
+        long gameTime = buf.readLong();
+
+        return new ChunkLevelEventPayload(new ChunkLevelEvent(
+            dimension, x, z, oldLevel, newLevel, oldStatus, newStatus,
+            tickets, added, removed, gameTime));
+    }
+
+    private static void writeTickets(FriendlyByteBuf buf, List<String> tickets)
+    {
+        buf.writeVarInt(tickets.size());
+
+        for (String ticket : tickets)
+        {
+            buf.writeUtf(ticket, MAX_TEXT_BYTES);
+        }
+    }
+
+    private static List<String> readTickets(FriendlyByteBuf buf)
+    {
         int count = buf.readVarInt();
 
         if (count < 0 || count > MAX_TICKETS)
@@ -76,9 +95,7 @@ public record ChunkLevelEventPayload(ChunkLevelEvent event) implements CustomPac
             tickets.add(buf.readUtf(MAX_TEXT_BYTES));
         }
 
-        long gameTime = buf.readLong();
-        return new ChunkLevelEventPayload(new ChunkLevelEvent(
-            dimension, x, z, oldLevel, newLevel, oldStatus, newStatus, tickets, gameTime));
+        return tickets;
     }
 
     @Override

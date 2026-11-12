@@ -174,5 +174,10 @@
   "maikuaidoufu_masa_tool.chunk.ticket.dragon": "Ender dragon",
   "maikuaidoufu_masa_tool.chunk.ticket.player_spawn": "Player spawn",
   "maikuaidoufu_masa_tool.chunk.ticket.spawn_search": "Spawn search",
-  "maikuaidoufu_masa_tool.chunk.ticket.unknown": "Unknown"
+  "maikuaidoufu_masa_tool.chunk.ticket.unknown": "Unknown",
+  "maikuaidoufu_masa_tool.chunk.cause.added": "added %s",
+  "maikuaidoufu_masa_tool.chunk.cause.removed": "removed %s",
+  "maikuaidoufu_masa_tool.chunk.cause.unchanged": "no ticket changes",
+  "maikuaidoufu_masa_tool.chunk.cause.current": "current %s",
+  "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "none"
 }

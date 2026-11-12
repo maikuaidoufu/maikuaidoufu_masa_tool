@@ -174,5 +174,10 @@
   "maikuaidoufu_masa_tool.chunk.ticket.dragon": "末影龙",
   "maikuaidoufu_masa_tool.chunk.ticket.player_spawn": "玩家出生点",
   "maikuaidoufu_masa_tool.chunk.ticket.spawn_search": "出生点搜索",
-  "maikuaidoufu_masa_tool.chunk.ticket.unknown": "未知类型"
+  "maikuaidoufu_masa_tool.chunk.ticket.unknown": "未知类型",
+  "maikuaidoufu_masa_tool.chunk.cause.added": "新增 %s",
+  "maikuaidoufu_masa_tool.chunk.cause.removed": "移除 %s",
+  "maikuaidoufu_masa_tool.chunk.cause.unchanged": "无 ticket 增删",
+  "maikuaidoufu_masa_tool.chunk.cause.current": "当前 %s",
+  "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "无"
 }
