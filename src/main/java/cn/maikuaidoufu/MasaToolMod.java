@@ -1,7 +1,9 @@
 package cn.maikuaidoufu;
 
+import cn.maikuaidoufu.net.ChunkNetworking;
 import cn.maikuaidoufu.net.RegionNetworking;
 import cn.maikuaidoufu.portal.PortalLog;
+import cn.maikuaidoufu.server.ChunkLoadMonitor;
 import cn.maikuaidoufu.server.RegionManager;
 import cn.maikuaidoufu.server.RegionStore;
 import cn.maikuaidoufu.server.ServerConfig;
@@ -21,6 +23,8 @@ public final class MasaToolMod implements ModInitializer
     {
         RegionNetworking.registerPayloads();
         RegionNetworking.registerServerHandlers();
+        ChunkNetworking.registerPayloads();
+        ChunkNetworking.registerServerHandlers();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
@@ -33,14 +37,19 @@ public final class MasaToolMod implements ModInitializer
         {
             RegionManager.clear();
             PortalLog.reset();
+            ChunkLoadMonitor.reset();
         });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-            RegionNetworking.sendSnapshot(handler.player)
-        );
+        {
+            RegionNetworking.sendSnapshot(handler.player);
+            ChunkNetworking.sendState(handler.player);
+        });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-            PortalLog.unsubscribe(handler.player)
-        );
+        {
+            PortalLog.unsubscribe(handler.player);
+            ChunkLoadMonitor.unsubscribe(handler.player);
+        });
 
         LOGGER.info("Doufu's Masa Tool common/server initialized");
     }

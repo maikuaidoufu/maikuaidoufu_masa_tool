@@ -11,6 +11,7 @@ public final class GuiTabs
         GENERAL,
         GROUPS,
         PORTAL,
+        CHUNK,
         HOTKEYS
     }
 
@@ -41,6 +42,7 @@ public final class GuiTabs
             case HOTKEYS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.hotkeys");
             case GROUPS -> StringUtils.translate("maikuaidoufu_masa_tool.tab.regions");
             case PORTAL -> StringUtils.translate("maikuaidoufu_masa_tool.tab.portal");
+            case CHUNK -> StringUtils.translate("maikuaidoufu_masa_tool.tab.chunk");
         };
     }
 
@@ -52,6 +54,7 @@ public final class GuiTabs
             case HOTKEYS -> new GuiHotkeys();
             case GROUPS -> new GuiGroupList();
             case PORTAL -> new GuiPortalLog();
+            case CHUNK -> new GuiChunkLog();
         });
     }
 }

@@ -1,5 +1,6 @@
 package cn.maikuaidoufu.client;
 
+import cn.maikuaidoufu.net.ChunkWatchPayload;
 import cn.maikuaidoufu.net.CreateEntryPayload;
 import cn.maikuaidoufu.net.CreateGroupPayload;
 import cn.maikuaidoufu.net.EntryControlPayload;
@@ -155,6 +156,47 @@ public final class ClientActions
         }
 
         return false;
+    }
+
+    public static boolean canWatchChunks()
+    {
+        return ClientPlayNetworking.canSend(ChunkWatchPayload.TYPE);
+    }
+
+    public static boolean setChunkWatchEnabled(boolean enabled)
+    {
+        if (!canWatchChunks())
+        {
+            return false;
+        }
+
+        ClientPlayNetworking.send(new ChunkWatchPayload(
+            ChunkWatchPayload.Action.TOGGLE, enabled, "", 0, 0));
+        return true;
+    }
+
+    public static void addChunkWatch(String dimension, int chunkX, int chunkZ)
+    {
+        if (!canWatchChunks())
+        {
+            return;
+        }
+
+        ClientChunkLog.addWatchLocal(dimension, chunkX, chunkZ);
+        ClientPlayNetworking.send(new ChunkWatchPayload(
+            ChunkWatchPayload.Action.ADD, false, dimension, chunkX, chunkZ));
+    }
+
+    public static void removeChunkWatch(String dimension, int chunkX, int chunkZ)
+    {
+        if (!canWatchChunks())
+        {
+            return;
+        }
+
+        ClientChunkLog.removeWatchLocal(dimension, chunkX, chunkZ);
+        ClientPlayNetworking.send(new ChunkWatchPayload(
+            ChunkWatchPayload.Action.REMOVE, false, dimension, chunkX, chunkZ));
     }
 
     private static boolean canSend(String messageKey)
