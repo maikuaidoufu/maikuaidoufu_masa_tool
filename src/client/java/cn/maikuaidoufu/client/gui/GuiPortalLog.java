@@ -1,7 +1,9 @@
 package cn.maikuaidoufu.client.gui;
 
 import cn.maikuaidoufu.client.ClientActions;
+import cn.maikuaidoufu.client.ClientGroupStore;
 import cn.maikuaidoufu.client.ClientPortalLog;
+import cn.maikuaidoufu.permissions.Feature;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -46,11 +48,15 @@ public final class GuiPortalLog extends GuiBase
         GuiTabs.add(this, GuiTabs.Tab.PORTAL, 26);
 
         boolean canToggle = ClientActions.canTogglePortalLog();
+        boolean denied = ClientGroupStore.isConnected()
+            && !ClientGroupStore.allows(Feature.PORTAL_LOG);
         ButtonOnOff toggle = new HintOnOff(12, 52, -1, false,
             "maikuaidoufu_masa_tool.button.portal_toggle", ClientPortalLog.isEnabled());
         toggle.setEnabled(canToggle);
         GuiHints.set(toggle, canToggle ? ""
-            : StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected"));
+            : StringUtils.translate(denied
+                ? "maikuaidoufu_masa_tool.hover.no_permission"
+                : "maikuaidoufu_masa_tool.hover.not_connected"));
         addButton(toggle, (button, mouseButton) ->
         {
             boolean next = !ClientPortalLog.isEnabled();

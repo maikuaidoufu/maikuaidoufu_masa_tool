@@ -1,6 +1,7 @@
 package cn.maikuaidoufu.net;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.permissions.Feature;
 import cn.maikuaidoufu.region.RegionGroup;
 import cn.maikuaidoufu.region.RegionLimits;
 import io.netty.handler.codec.DecoderException;
@@ -12,14 +13,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 /**
- * The complete group list sent to one client, with that client's permission
- * flags.
+ * The complete group list sent to one client, together with a bit mask of that
+ * player's effective {@link Feature} permissions (see FeaturePermissions#mask).
  */
 public record GroupListPayload(
     int protocolVersion,
-    boolean canCreate,
-    boolean canEditAll,
-    boolean allowOwnerEdit,
+    int permissions,
     List<RegionGroup> groups
 ) implements CustomPacketPayload
 {
@@ -37,9 +36,7 @@ public record GroupListPayload(
     private static void write(FriendlyByteBuf buf, GroupListPayload payload)
     {
         buf.writeVarInt(payload.protocolVersion);
-        buf.writeBoolean(payload.canCreate);
-        buf.writeBoolean(payload.canEditAll);
-        buf.writeBoolean(payload.allowOwnerEdit);
+        buf.writeVarInt(payload.permissions);
         buf.writeVarInt(payload.groups.size());
 
         for (RegionGroup group : payload.groups)
@@ -51,9 +48,7 @@ public record GroupListPayload(
     private static GroupListPayload read(FriendlyByteBuf buf)
     {
         int protocol = buf.readVarInt();
-        boolean canCreate = buf.readBoolean();
-        boolean canEditAll = buf.readBoolean();
-        boolean allowOwnerEdit = buf.readBoolean();
+        int permissions = buf.readVarInt();
         int count = buf.readVarInt();
 
         if (count < 0 || count > RegionLimits.MAX_GROUPS)
@@ -68,7 +63,7 @@ public record GroupListPayload(
             groups.add(RegionCodec.readGroup(buf));
         }
 
-        return new GroupListPayload(protocol, canCreate, canEditAll, allowOwnerEdit, groups);
+        return new GroupListPayload(protocol, permissions, groups);
     }
 
     @Override

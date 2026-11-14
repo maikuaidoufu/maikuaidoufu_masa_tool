@@ -5,7 +5,8 @@ import java.util.UUID;
 public final class RegionLimits
 {
     // v2: language-neutral PortalEventPayload. v3: chunk load watcher.
-    public static final int PROTOCOL_VERSION = 3;
+    // v4: GroupListPayload carries a per-feature permission mask.
+    public static final int PROTOCOL_VERSION = 4;
 
     public static final int MAX_GROUPS = 256;
     public static final int MAX_ENTRIES_PER_GROUP = 256;

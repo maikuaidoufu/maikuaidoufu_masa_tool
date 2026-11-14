@@ -2,7 +2,9 @@ package cn.maikuaidoufu.client.gui;
 
 import cn.maikuaidoufu.client.ClientActions;
 import cn.maikuaidoufu.client.ClientChunkLog;
+import cn.maikuaidoufu.client.ClientGroupStore;
 import cn.maikuaidoufu.net.ChunkWatchStatePayload;
+import cn.maikuaidoufu.permissions.Feature;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -52,12 +54,16 @@ public final class GuiChunkLog extends GuiBase
         GuiTabs.add(this, GuiTabs.Tab.CHUNK, 26);
 
         boolean canToggle = ClientActions.canWatchChunks();
+        boolean denied = ClientGroupStore.isConnected()
+            && !ClientGroupStore.allows(Feature.CHUNK_MONITOR);
         ButtonOnOff toggle = new HintOnOff(12, 52, -1, false,
             "maikuaidoufu_masa_tool.chunk.toggle", ClientChunkLog.isEnabled());
         toggle.setEnabled(canToggle);
         GuiHints.set(toggle, canToggle
             ? ""
-            : StringUtils.translate("maikuaidoufu_masa_tool.hover.not_connected"));
+            : StringUtils.translate(denied
+                ? "maikuaidoufu_masa_tool.hover.no_permission"
+                : "maikuaidoufu_masa_tool.hover.not_connected"));
         this.addButton(toggle, (button, mouseButton) ->
         {
             boolean next = !ClientChunkLog.isEnabled();
@@ -79,6 +85,7 @@ public final class GuiChunkLog extends GuiBase
 
         ButtonGeneric add = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.add"));
+        add.setEnabled(canToggle);
         x += add.getWidth() + 4;
         this.addButton(add, (button, mouseButton) ->
         {
@@ -88,6 +95,7 @@ public final class GuiChunkLog extends GuiBase
 
         ButtonGeneric current = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.current"));
+        current.setEnabled(canToggle);
         x += current.getWidth() + 4;
         this.addButton(current, (button, mouseButton) ->
         {
@@ -112,6 +120,7 @@ public final class GuiChunkLog extends GuiBase
             String label = shortDimension(entry.dimension())
                 + " (" + entry.chunkX() + ", " + entry.chunkZ() + ")";
             ButtonGeneric watch = new ButtonGeneric(bx, by, 144, 20, label);
+            watch.setEnabled(canToggle);
             this.addButton(watch, (button, mouseButton) ->
             {
                 ClientActions.removeChunkWatch(entry.dimension(), entry.chunkX(), entry.chunkZ());

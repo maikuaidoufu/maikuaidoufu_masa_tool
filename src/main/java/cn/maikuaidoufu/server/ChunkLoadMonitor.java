@@ -3,6 +3,7 @@ package cn.maikuaidoufu.server;
 import cn.maikuaidoufu.net.ChunkLevelEvent;
 import cn.maikuaidoufu.net.ChunkLevelEventPayload;
 import cn.maikuaidoufu.net.ChunkWatchStatePayload;
+import cn.maikuaidoufu.permissions.Feature;
 import cn.maikuaidoufu.region.RegionLimits;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -172,6 +173,7 @@ public final class ChunkLoadMonitor
         for (ServerPlayer player : server.getPlayerList().getPlayers())
         {
             if (isWatching(player.getUUID(), key)
+                && FeaturePermissions.allows(player, Feature.CHUNK_MONITOR)
                 && ServerPlayNetworking.canSend(player, ChunkLevelEventPayload.TYPE))
             {
                 ServerPlayNetworking.send(player, payload);

@@ -8,6 +8,7 @@ import cn.maikuaidoufu.net.EntryDraft;
 import cn.maikuaidoufu.net.GroupControlPayload;
 import cn.maikuaidoufu.net.PortalTogglePayload;
 import cn.maikuaidoufu.net.RequestSnapshotPayload;
+import cn.maikuaidoufu.permissions.Feature;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionGroup;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -107,7 +108,8 @@ public final class ClientActions
 
     public static boolean canTogglePortalLog()
     {
-        return ClientPlayNetworking.canSend(PortalTogglePayload.TYPE);
+        return ClientPlayNetworking.canSend(PortalTogglePayload.TYPE)
+            && ClientGroupStore.allows(Feature.PORTAL_LOG);
     }
 
     public static boolean setPortalLogEnabled(boolean enabled)
@@ -160,7 +162,8 @@ public final class ClientActions
 
     public static boolean canWatchChunks()
     {
-        return ClientPlayNetworking.canSend(ChunkWatchPayload.TYPE);
+        return ClientPlayNetworking.canSend(ChunkWatchPayload.TYPE)
+            && ClientGroupStore.allows(Feature.CHUNK_MONITOR);
     }
 
     public static boolean setChunkWatchEnabled(boolean enabled)

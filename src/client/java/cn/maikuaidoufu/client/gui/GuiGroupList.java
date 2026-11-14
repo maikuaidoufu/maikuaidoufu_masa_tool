@@ -5,6 +5,7 @@ import cn.maikuaidoufu.client.ClientGroupStore;
 import cn.maikuaidoufu.client.Configs;
 import cn.maikuaidoufu.client.GroupStoreListener;
 import cn.maikuaidoufu.client.compat.LitematicaSupport;
+import cn.maikuaidoufu.permissions.Feature;
 import cn.maikuaidoufu.region.RegionGroup;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiListBase;
@@ -44,6 +45,13 @@ public final class GuiGroupList
         clearButtons();
         GuiTabs.add(this, GuiTabs.Tab.GROUPS, 26);
         createTopButtons();
+
+        if (ClientGroupStore.isConnected()
+            && !ClientGroupStore.allows(Feature.VIEW_REGIONS))
+        {
+            addLabel(12, 48, getScreenWidth() - 24, 12, 0xFFFFAA55,
+                StringUtils.translate("maikuaidoufu_masa_tool.gui.no_view_permission"));
+        }
 
         if (!ClientGroupStore.isConnected())
         {

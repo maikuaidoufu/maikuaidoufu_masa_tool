@@ -1,15 +1,18 @@
 package cn.maikuaidoufu.net;
 
 import cn.maikuaidoufu.MasaToolMod;
+import cn.maikuaidoufu.permissions.Feature;
 import cn.maikuaidoufu.portal.PortalLog;
 import cn.maikuaidoufu.region.Box;
 import cn.maikuaidoufu.region.RegionEntry;
 import cn.maikuaidoufu.region.RegionGroup;
 import cn.maikuaidoufu.region.RegionLimits;
+import cn.maikuaidoufu.server.FeaturePermissions;
 import cn.maikuaidoufu.server.RegionManager;
 import cn.maikuaidoufu.server.RegionPermissions;
 import cn.maikuaidoufu.server.RegionStore;
 import cn.maikuaidoufu.server.ServerConfig;
+import java.util.List;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.registries.Registries;
@@ -68,12 +71,17 @@ public final class RegionNetworking
             return;
         }
 
+        // Players without VIEW_REGIONS must not learn other players' region
+        // names, coordinates or owners. They still receive the snapshot so the
+        // client can show the correct permission state and protocol version.
+        List<RegionGroup> groups = FeaturePermissions.allows(player, Feature.VIEW_REGIONS)
+            ? RegionManager.getGroups()
+            : List.of();
+
         GroupListPayload payload = new GroupListPayload(
             RegionLimits.PROTOCOL_VERSION,
-            ServerConfig.canCreate(player),
-            ServerConfig.isOp(player),
-            ServerConfig.allowOwnerEdit(),
-            RegionManager.getGroups()
+            FeaturePermissions.mask(player),
+            groups
         );
 
         ServerPlayNetworking.send(player, payload);
@@ -89,7 +97,7 @@ public final class RegionNetworking
 
     private static void handleCreateGroup(ServerPlayer player, MinecraftServer server, CreateGroupPayload payload)
     {
-        if (!ServerConfig.canCreate(player))
+        if (!FeaturePermissions.allows(player, Feature.CREATE_GROUP))
         {
             message(player, "maikuaidoufu_masa_tool.message.no_permission");
             return;
@@ -193,7 +201,14 @@ public final class RegionNetworking
             return;
         }
 
-        if (!RegionPermissions.canEditGroup(player, group))
+        boolean permitted = switch (payload.action())
+        {
+            case SET_ENABLED, RENAME -> RegionPermissions.canEditGroup(player, group);
+            case DELETE -> RegionPermissions.canDeleteGroup(player, group);
+            case CLEAR -> RegionPermissions.canClearGroup(player, group);
+        };
+
+        if (!permitted)
         {
             message(player, "maikuaidoufu_masa_tool.message.no_permission");
             return;
@@ -221,24 +236,9 @@ public final class RegionNetworking
                     message(player, "maikuaidoufu_masa_tool.message.invalid_name");
                 }
             }
-            case DELETE ->
-            {
-                if (!RegionPermissions.canDeleteGroup(player, group))
-                {
-                    message(player, "maikuaidoufu_masa_tool.message.no_permission");
-                    return;
-                }
-
-                changed = RegionManager.deleteGroup(group.id());
-            }
+            case DELETE -> changed = RegionManager.deleteGroup(group.id());
             case CLEAR ->
             {
-                if (!RegionPermissions.canClearGroup(player, group))
-                {
-                    message(player, "maikuaidoufu_masa_tool.message.no_permission");
-                    return;
-                }
-
                 RegionManager.clearGroup(group.id(), now);
                 changed = true;
             }
@@ -297,6 +297,14 @@ public final class RegionNetworking
 
     private static void handlePortalToggle(ServerPlayer player, PortalTogglePayload payload)
     {
+        // Unsubscribing is always allowed, even if the permission was revoked
+        // while the player was online.
+        if (payload.enabled() && !FeaturePermissions.allows(player, Feature.PORTAL_LOG))
+        {
+            message(player, "maikuaidoufu_masa_tool.message.no_permission");
+            return;
+        }
+
         PortalLog.setSubscribed(player, payload.enabled());
     }
 

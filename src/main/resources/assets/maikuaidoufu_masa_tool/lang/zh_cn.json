@@ -179,5 +179,7 @@
   "maikuaidoufu_masa_tool.chunk.cause.removed": "移除 %s",
   "maikuaidoufu_masa_tool.chunk.cause.unchanged": "无 ticket 增删",
   "maikuaidoufu_masa_tool.chunk.cause.current": "当前 %s",
-  "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "无"
+  "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "无",
+  "maikuaidoufu_masa_tool.message.config_reloaded": "§a权限配置已重新加载。",
+  "maikuaidoufu_masa_tool.gui.no_view_permission": "你没有权限查看此服务器的区域列表。"
 }

@@ -4,6 +4,8 @@ import cn.maikuaidoufu.net.ChunkNetworking;
 import cn.maikuaidoufu.net.RegionNetworking;
 import cn.maikuaidoufu.portal.PortalLog;
 import cn.maikuaidoufu.server.ChunkLoadMonitor;
+import cn.maikuaidoufu.server.FeaturePermissions;
+import cn.maikuaidoufu.server.PermissionCommands;
 import cn.maikuaidoufu.server.RegionManager;
 import cn.maikuaidoufu.server.RegionStore;
 import cn.maikuaidoufu.server.ServerConfig;
@@ -25,10 +27,12 @@ public final class MasaToolMod implements ModInitializer
         RegionNetworking.registerServerHandlers();
         ChunkNetworking.registerPayloads();
         ChunkNetworking.registerServerHandlers();
+        PermissionCommands.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server ->
         {
             ServerConfig.load();
+            FeaturePermissions.load();
             RegionStore.load(server);
         });
 

@@ -22,6 +22,69 @@ the tickets currently in effect. A per-chunk ticket snapshot makes that diff
 possible; only watched chunks are reported, so an empty watch list costs almost
 nothing on the server.
 
+## Permissions
+
+Server-side feature access lives in its own file,
+`config/maikuaidoufu_masa_tool-permissions.json`, created on the first server
+start. **Every feature defaults to `OPS`.** Edit the file, then run
+`/masatool reload` (or restart the server) to apply it without a restart.
+
+```json
+{
+  "viewRegions": "OPS",
+  "createGroup": "OPS",
+  "addDefaultRegion": "OPS",
+  "editGroup": "OPS",
+  "deleteGroup": "OPS",
+  "clearGroup": "OPS",
+  "addRegion": "OPS",
+  "editRegion": "OPS",
+  "portalLog": "OPS",
+  "chunkMonitor": "OPS",
+  "reloadConfig": "OPS",
+  "ownerBypass": false
+}
+```
+
+Allowed values:
+
+| Value | Meaning |
+|---|---|
+| `EVERYONE` | any player |
+| `MODERATOR` / `OPS` / `ADMIN` / `OWNER` | Minecraft command permission level 1 / 2 / 3 / 4. `OPS` is the default and matches the old OP-only check; a higher level also satisfies a lower one |
+| `NOBODY` | feature disabled for everyone, including OPs |
+
+| Key | Controls |
+|---|---|
+| `viewRegions` | receiving the region list (and therefore seeing outlines/GUI entries) |
+| `createGroup` | creating a new group |
+| `addDefaultRegion` | adding a sub-region to the built-in default group |
+| `editGroup` | enabling/disabling and renaming a group |
+| `deleteGroup`, `clearGroup` | deleting a group / removing all of its sub-regions |
+| `addRegion`, `editRegion` | adding, toggling or deleting sub-regions in a regular group |
+| `portalLog` | subscribing to the nether portal travel terminal |
+| `chunkMonitor` | subscribing to / managing the chunk loading watcher |
+| `reloadConfig` | running `/masatool reload` |
+
+`ownerBypass` (default `false`) lets players manage groups and sub-regions they
+created themselves even without the matching permission. The built-in default
+group has no owner, so `clearGroup` still needs an explicit permission.
+
+Notes:
+
+- With the default `viewRegions: OPS`, ordinary players get an **empty region
+  list and no outlines**. Set it to `EVERYONE` if everyone should see the
+  regions. Observer suppression itself is server-authoritative and still works.
+- `allowRegionCreation` and `allowOwnerEdit` in the old
+  `maikuaidoufu_masa_tool-server.json` are no longer used; that file now only
+  holds the group/entry limits. There is no automatic migration, so set
+  `ownerBypass` or the individual keys yourself if you relied on them.
+- Client-only features (schematic verifier export, outline rendering, hotkeys)
+  are unaffected by this file.
+- The server re-checks every action, so a modified client cannot bypass these
+  rules. The permission mask is sent in the group snapshot (protocol v4), which
+  means client and server must be updated together.
+
 ## Build
 
 Requires JDK 25.
