@@ -3,6 +3,8 @@ package cn.maikuaidoufu.portal;
 import cn.maikuaidoufu.MasaToolMod;
 import cn.maikuaidoufu.net.PortalEvent;
 import cn.maikuaidoufu.net.PortalEventPayload;
+import cn.maikuaidoufu.permissions.Feature;
+import cn.maikuaidoufu.server.FeaturePermissions;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
@@ -315,6 +317,7 @@ public final class PortalLog
         for (ServerPlayer player : server.getPlayerList().getPlayers())
         {
             if (SUBSCRIBERS.contains(player.getUUID())
+                && FeaturePermissions.allows(player, Feature.PORTAL_LOG)
                 && ServerPlayNetworking.canSend(player, PortalEventPayload.TYPE))
             {
                 ServerPlayNetworking.send(player, payload);

@@ -2,6 +2,8 @@ package cn.maikuaidoufu.client;
 
 import cn.maikuaidoufu.MasaToolMod;
 import cn.maikuaidoufu.client.gui.VerifierGuiHook;
+import cn.maikuaidoufu.net.ChunkLevelEventPayload;
+import cn.maikuaidoufu.net.ChunkWatchStatePayload;
 import cn.maikuaidoufu.net.GroupListPayload;
 import cn.maikuaidoufu.net.PortalEventPayload;
 import fi.dy.masa.malilib.event.RenderEventHandler;
@@ -25,6 +27,7 @@ public final class MasaToolClientImpl
     {
         Configs.init();
         ClientHighlightStore.load();
+        ClientLogStore.load();
 
         ClientPlayNetworking.registerGlobalReceiver(GroupListPayload.TYPE, (payload, context) ->
             context.client().execute(() -> handleSnapshot(context.client(), payload))
@@ -32,13 +35,21 @@ public final class MasaToolClientImpl
         ClientPlayNetworking.registerGlobalReceiver(PortalEventPayload.TYPE, (payload, context) ->
             context.client().execute(() -> ClientPortalLog.add(payload.event()))
         );
+        ClientPlayNetworking.registerGlobalReceiver(ChunkLevelEventPayload.TYPE, (payload, context) ->
+            context.client().execute(() -> ClientChunkLog.add(payload.event()))
+        );
+        ClientPlayNetworking.registerGlobalReceiver(ChunkWatchStatePayload.TYPE, (payload, context) ->
+            context.client().execute(() -> ClientChunkLog.applyState(payload))
+        );
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
         {
             activeHandler = handler;
             ClientGroupStore.clear();
-            ClientPortalLog.clear();
+            // Log history is client-local: only the per-connection subscription
+            // state is reset, so re-opening the GUI keeps earlier lines.
             ClientPortalLog.setEnabled(false);
+            ClientChunkLog.resetConnection();
             retriesLeft = SNAPSHOT_MAX_RETRIES;
             retryTicks = 1;
         });
@@ -54,14 +65,16 @@ public final class MasaToolClientImpl
             activeHandler = null;
             retriesLeft = 0;
             retryTicks = 0;
+            ClientLogStore.save();
             ClientGroupStore.clear();
-            ClientPortalLog.clear();
             ClientPortalLog.setEnabled(false);
+            ClientChunkLog.resetConnection();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->
         {
             VerifierGuiHook.onClientTick(client);
+            ClientLogStore.tick();
 
             if (retriesLeft <= 0 || ClientGroupStore.isConnected())
             {

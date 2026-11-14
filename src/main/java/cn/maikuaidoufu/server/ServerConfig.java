@@ -11,22 +11,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.Permissions;
 
+/**
+ * Server-side limits only. Feature permissions now live in the dedicated
+ * {@code maikuaidoufu_masa_tool-permissions.json} handled by
+ * {@link FeaturePermissions}.
+ */
 public final class ServerConfig
 {
-    public enum CreationPermission
-    {
-        OPS,
-        EVERYONE
-    }
-
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE_NAME = "maikuaidoufu_masa_tool-server.json";
 
-    private static CreationPermission creationPermission = CreationPermission.OPS;
-    private static boolean allowOwnerEdit = true;
     private static int maxGroups = RegionLimits.MAX_GROUPS;
     private static int maxEntriesPerGroup = RegionLimits.MAX_ENTRIES_PER_GROUP;
     private static int maxTotalEntries = RegionLimits.MAX_TOTAL_ENTRIES;
@@ -37,8 +32,6 @@ public final class ServerConfig
 
     public static void load()
     {
-        creationPermission = CreationPermission.OPS;
-        allowOwnerEdit = true;
         maxGroups = RegionLimits.MAX_GROUPS;
         maxEntriesPerGroup = RegionLimits.MAX_ENTRIES_PER_GROUP;
         maxTotalEntries = RegionLimits.MAX_TOTAL_ENTRIES;
@@ -54,22 +47,6 @@ public final class ServerConfig
         try
         {
             JsonObject root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8)).getAsJsonObject();
-
-            if (root.has("allowRegionCreation"))
-            {
-                String value = root.get("allowRegionCreation").getAsString();
-
-                if ("EVERYONE".equalsIgnoreCase(value))
-                {
-                    creationPermission = CreationPermission.EVERYONE;
-                }
-            }
-
-            if (root.has("allowOwnerEdit"))
-            {
-                allowOwnerEdit = root.get("allowOwnerEdit").getAsBoolean();
-            }
-
             maxGroups = clamp(root, "maxGroups", maxGroups, 1, RegionLimits.MAX_GROUPS);
             maxEntriesPerGroup = clamp(root, "maxEntriesPerGroup", maxEntriesPerGroup, 1, RegionLimits.MAX_ENTRIES_PER_GROUP);
             maxTotalEntries = clamp(root, "maxTotalEntries", maxTotalEntries, 1, RegionLimits.MAX_TOTAL_ENTRIES);
@@ -95,8 +72,6 @@ public final class ServerConfig
     private static void save(Path file)
     {
         JsonObject root = new JsonObject();
-        root.addProperty("allowRegionCreation", creationPermission.name());
-        root.addProperty("allowOwnerEdit", allowOwnerEdit);
         root.addProperty("maxGroups", maxGroups);
         root.addProperty("maxEntriesPerGroup", maxEntriesPerGroup);
         root.addProperty("maxTotalEntries", maxTotalEntries);
@@ -110,21 +85,6 @@ public final class ServerConfig
         {
             MasaToolMod.LOGGER.error("Failed to save server config to {}", file, e);
         }
-    }
-
-    public static boolean canCreate(ServerPlayer player)
-    {
-        return player != null && (isOp(player) || creationPermission == CreationPermission.EVERYONE);
-    }
-
-    public static boolean isOp(ServerPlayer player)
-    {
-        return player != null && player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
-    }
-
-    public static boolean allowOwnerEdit()
-    {
-        return allowOwnerEdit;
     }
 
     public static int maxGroups()
