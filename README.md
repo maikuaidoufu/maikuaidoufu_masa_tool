@@ -12,9 +12,10 @@ container slot differences are written to a text file under
 `maikuaidoufu_masa_tool-exports/`, one line per position with the expected and
 actual value.
 
-The "Chunk loading" tab watches selected chunks on the server. Add chunk
-coordinates (or click "Current chunk"), enable the subscription, and the tab
-logs every transition between the four loading tiers: entity ticking (strong),
+The "Chunk load watcher" tab watches selected chunks on the server. Type chunk
+coordinates (or click "Current chunk" to fill the input) and press Add, then
+enable the subscription; the tab logs every transition between the four
+loading tiers: entity ticking (strong),
 block ticking, loaded-only (weak), and unloaded. Each line includes the old and
 new ticket levels and the exact tickets added or removed since the previous tier
 change (player simulation, `/forceload`, portals, ender pearls and so on), plus

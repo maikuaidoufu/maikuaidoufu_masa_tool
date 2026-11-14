@@ -86,22 +86,24 @@ public final class GuiChunkLog extends GuiBase
         ButtonGeneric add = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.add"));
         add.setEnabled(canToggle);
+        GuiHints.set(add, StringUtils.translate("maikuaidoufu_masa_tool.hover.chunk_add"));
         x += add.getWidth() + 4;
         this.addButton(add, (button, mouseButton) ->
         {
-            this.addFromInput();
-            this.initGui();
+            // Only recreate the screen when a chunk was really added, so an
+            // empty or malformed input leaves the GUI completely untouched.
+            if (this.addFromInput())
+            {
+                this.initGui();
+            }
         });
 
         ButtonGeneric current = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.current"));
         current.setEnabled(canToggle);
+        GuiHints.set(current, StringUtils.translate("maikuaidoufu_masa_tool.hover.chunk_current"));
         x += current.getWidth() + 4;
-        this.addButton(current, (button, mouseButton) ->
-        {
-            this.addCurrentChunk();
-            this.initGui();
-        });
+        this.addButton(current, (button, mouseButton) -> this.fillCurrentChunkInput());
 
         int right = this.getScreenWidth() - 10;
         ButtonGeneric clear = new ButtonGeneric(right, rowY, -1, 20,
@@ -141,7 +143,8 @@ public final class GuiChunkLog extends GuiBase
         }
     }
 
-    private void addFromInput()
+    /** @return true only when a chunk was actually added. */
+    private boolean addFromInput()
     {
         if (this.inputField != null)
         {
@@ -150,17 +153,18 @@ public final class GuiChunkLog extends GuiBase
 
         String raw = this.inputText.trim();
 
+        // An empty input must do nothing at all - in particular it must not
+        // silently fall back to the player's current chunk.
         if (raw.isEmpty())
         {
-            this.addCurrentChunk();
-            return;
+            return false;
         }
 
         String[] parts = raw.split("[,\\s]+");
 
         if (parts.length < 2)
         {
-            return;
+            return false;
         }
 
         try
@@ -174,14 +178,21 @@ public final class GuiChunkLog extends GuiBase
             {
                 this.inputField.setValue("");
             }
+
+            return true;
         }
         catch (NumberFormatException ignored)
         {
             // Ignore malformed coordinates.
+            return false;
         }
     }
 
-    private void addCurrentChunk()
+    /**
+     * Only fills the coordinate input with the player's current chunk. The
+     * player still has to press Add, so the value can be reviewed or edited.
+     */
+    private void fillCurrentChunkInput()
     {
         Minecraft mc = Minecraft.getInstance();
 
@@ -192,7 +203,13 @@ public final class GuiChunkLog extends GuiBase
 
         int chunkX = mc.player.blockPosition().getX() >> 4;
         int chunkZ = mc.player.blockPosition().getZ() >> 4;
-        ClientActions.addChunkWatch(dimension(), chunkX, chunkZ);
+        String coordinates = chunkX + " " + chunkZ;
+        this.inputText = coordinates;
+
+        if (this.inputField != null)
+        {
+            this.inputField.setValue(coordinates);
+        }
     }
 
     @Override

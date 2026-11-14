@@ -150,13 +150,13 @@
   "maikuaidoufu_masa_tool.button.xray_render": "透视渲染: %s",
   "maikuaidoufu_masa_tool.hover.xray_render": "开启后区域框会穿透方块显示，关闭后只显示没有被遮挡的部分",
 
-  "maikuaidoufu_masa_tool.tab.chunk": "区块加载",
+  "maikuaidoufu_masa_tool.tab.chunk": "区块加载检测",
   "maikuaidoufu_masa_tool.chunk.title": "区块加载检测",
   "maikuaidoufu_masa_tool.chunk.toggle": "启用: %s",
   "maikuaidoufu_masa_tool.chunk.add": "添加",
   "maikuaidoufu_masa_tool.chunk.current": "当前区块",
   "maikuaidoufu_masa_tool.chunk.clear": "清空",
-  "maikuaidoufu_masa_tool.chunk.no_watch": "还没有关注的区块，输入区块坐标或点「当前区块」添加",
+  "maikuaidoufu_masa_tool.chunk.no_watch": "还没有关注的区块，输入坐标或点「当前区块」填入坐标，再点「添加」",
   "maikuaidoufu_masa_tool.chunk.more_watches": "另有 %s 个关注区块",
   "maikuaidoufu_masa_tool.chunk.empty": "暂无变化，启用并添加关注区块后即可看到记录",
   "maikuaidoufu_masa_tool.chunk.event": "%s [%s, %s] %s(%s) → %s(%s) · 原因: %s",
@@ -181,5 +181,7 @@
   "maikuaidoufu_masa_tool.chunk.cause.current": "当前 %s",
   "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "无",
   "maikuaidoufu_masa_tool.message.config_reloaded": "§a权限配置已重新加载。",
-  "maikuaidoufu_masa_tool.gui.no_view_permission": "你没有权限查看此服务器的区域列表。"
+  "maikuaidoufu_masa_tool.gui.no_view_permission": "你没有权限查看此服务器的区域列表。",
+  "maikuaidoufu_masa_tool.hover.chunk_add": "只添加输入框里填写的区块坐标；留空时不执行任何操作",
+  "maikuaidoufu_masa_tool.hover.chunk_current": "把玩家当前所在区块的坐标填入输入框，不会直接添加"
 }
