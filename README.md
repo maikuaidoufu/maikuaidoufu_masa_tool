@@ -30,7 +30,10 @@ start. **Every feature defaults to `OPS`.** Edit the file, then run
 `/masatool reload` (or restart the server) to apply it without a restart.
 
 ```json
+// 权限配置：每一项控制一个功能所需的权限，默认全部 OPS。
+// 可选值：EVERYONE / MODERATOR / OPS / ADMIN / OWNER / NOBODY。改完执行 /masatool reload。
 {
+  // 查看区域列表；设为 EVERYONE 可让所有玩家看到区域框
   "viewRegions": "OPS",
   "createGroup": "OPS",
   "addDefaultRegion": "OPS",
@@ -45,6 +48,14 @@ start. **Every feature defaults to `OPS`.** Edit the file, then run
   "ownerBypass": false
 }
 ```
+
+The generated file has a **Chinese comment above every setting** plus a short
+header. Both `//` line comments and `/* ... */` block comments are accepted.
+When the file needs to be regenerated (a new feature key, an invalid value, or
+an old file using the `_comment` field), hand-written comments are **preserved**
+next to the key they were written above; only missing comments are regenerated.
+Put notes directly above their setting, or before the opening brace for
+file-level notes.
 
 Allowed values:
 
