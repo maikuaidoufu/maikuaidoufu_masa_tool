@@ -182,6 +182,8 @@
   "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "none",
   "maikuaidoufu_masa_tool.message.config_reloaded": "§aPermissions config reloaded.",
   "maikuaidoufu_masa_tool.gui.no_view_permission": "You do not have permission to view the region list on this server.",
-  "maikuaidoufu_masa_tool.hover.chunk_add": "Adds only the chunk typed in the input; does nothing when empty",
-  "maikuaidoufu_masa_tool.hover.chunk_current": "Fills the input with your current chunk; does not add it"
+  "maikuaidoufu_masa_tool.config.name.log_cache_size": "Log cache size",
+  "maikuaidoufu_masa_tool.config.comment.log_cache_size": "Recent entries kept on the client for each of the portal and chunk logs (100-10000)",
+  "maikuaidoufu_masa_tool.general.log_cache_size": "Log cache size (100-10000):",
+  "maikuaidoufu_masa_tool.button.log_cache_apply": "Apply"
 }

@@ -182,6 +182,8 @@
   "maikuaidoufu_masa_tool.chunk.cause.no_tickets": "无",
   "maikuaidoufu_masa_tool.message.config_reloaded": "§a权限配置已重新加载。",
   "maikuaidoufu_masa_tool.gui.no_view_permission": "你没有权限查看此服务器的区域列表。",
-  "maikuaidoufu_masa_tool.hover.chunk_add": "只添加输入框里填写的区块坐标；留空时不执行任何操作",
-  "maikuaidoufu_masa_tool.hover.chunk_current": "把玩家当前所在区块的坐标填入输入框，不会直接添加"
+  "maikuaidoufu_masa_tool.config.name.log_cache_size": "日志缓存条数",
+  "maikuaidoufu_masa_tool.config.comment.log_cache_size": "地狱门日志与区块加载日志在客户端各自保留的最近记录条数（100~10000）",
+  "maikuaidoufu_masa_tool.general.log_cache_size": "日志缓存条数（100~10000）：",
+  "maikuaidoufu_masa_tool.button.log_cache_apply": "应用"
 }

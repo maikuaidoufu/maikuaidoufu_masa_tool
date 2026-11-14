@@ -86,7 +86,6 @@ public final class GuiChunkLog extends GuiBase
         ButtonGeneric add = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.add"));
         add.setEnabled(canToggle);
-        GuiHints.set(add, StringUtils.translate("maikuaidoufu_masa_tool.hover.chunk_add"));
         x += add.getWidth() + 4;
         this.addButton(add, (button, mouseButton) ->
         {
@@ -101,7 +100,6 @@ public final class GuiChunkLog extends GuiBase
         ButtonGeneric current = new ButtonGeneric(x, rowY, -1, 20,
             StringUtils.translate("maikuaidoufu_masa_tool.chunk.current"));
         current.setEnabled(canToggle);
-        GuiHints.set(current, StringUtils.translate("maikuaidoufu_masa_tool.hover.chunk_current"));
         x += current.getWidth() + 4;
         this.addButton(current, (button, mouseButton) -> this.fillCurrentChunkInput());
 

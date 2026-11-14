@@ -14,7 +14,6 @@ public final class ClientChunkLog
     {
     }
 
-    private static final int MAX_ENTRIES = 500;
     private static final List<Entry> ENTRIES = new ArrayList<>();
 
     private static List<ChunkWatchStatePayload.Entry> watches = List.of();
@@ -40,13 +39,9 @@ public final class ClientChunkLog
         }
 
         ENTRIES.add(new Entry(text, ChunkLogFormatter.direction(event), event.gameTime()));
-
-        while (ENTRIES.size() > MAX_ENTRIES)
-        {
-            ENTRIES.remove(0);
-        }
-
+        trimToLimit();
         revision++;
+        ClientLogStore.markDirty();
     }
 
     public static void applyState(ChunkWatchStatePayload payload)
@@ -96,15 +91,57 @@ public final class ClientChunkLog
         {
             ENTRIES.clear();
             revision++;
+            // Persist immediately so a manual clear survives a restart.
+            ClientLogStore.save();
         }
     }
 
-    public static void reset()
+    /**
+     * Connection-scoped state is reset on join/disconnect, but the log history
+     * itself is client-local and deliberately kept.
+     */
+    public static void resetConnection()
     {
-        ENTRIES.clear();
         watches = List.of();
         enabled = false;
         revision++;
+    }
+
+    /** Replaces the in-memory log with a previously saved snapshot. */
+    public static void restore(List<Entry> entries)
+    {
+        ENTRIES.clear();
+
+        if (entries != null)
+        {
+            ENTRIES.addAll(entries);
+        }
+
+        trimToLimit();
+        revision++;
+    }
+
+    /** Re-applies the configured cache size after the user changes it. */
+    public static void trim()
+    {
+        int before = ENTRIES.size();
+        trimToLimit();
+
+        if (ENTRIES.size() != before)
+        {
+            revision++;
+        }
+    }
+
+    private static void trimToLimit()
+    {
+        int limit = Configs.LOG_CACHE_SIZE.getIntegerValue();
+        int excess = ENTRIES.size() - limit;
+
+        if (excess > 0)
+        {
+            ENTRIES.subList(0, excess).clear();
+        }
     }
 
     public static List<Entry> entries()

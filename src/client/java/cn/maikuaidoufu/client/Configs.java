@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
+import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybindManager;
@@ -50,9 +51,17 @@ public final class Configs implements IConfigHandler
         "maikuaidoufu_masa_tool.config.comment.xray_render",
         "maikuaidoufu_masa_tool.config.name.xray_render",
         "maikuaidoufu_masa_tool.config.name.xray_render");
+    public static final ConfigInteger LOG_CACHE_SIZE = new ConfigInteger(
+        "logCacheSize",
+        1000,
+        100,
+        10000,
+        "maikuaidoufu_masa_tool.config.comment.log_cache_size",
+        "maikuaidoufu_masa_tool.config.name.log_cache_size",
+        "maikuaidoufu_masa_tool.config.name.log_cache_size");
 
     public static final List<IConfigBase> OPTIONS =
-        List.of(RENDER_HIGHLIGHTS, XRAY_HIGHLIGHTS, VERIFIER_EXPORT);
+        List.of(RENDER_HIGHLIGHTS, XRAY_HIGHLIGHTS, VERIFIER_EXPORT, LOG_CACHE_SIZE);
 
     private Configs()
     {

@@ -27,6 +27,7 @@ public final class MasaToolClientImpl
     {
         Configs.init();
         ClientHighlightStore.load();
+        ClientLogStore.load();
 
         ClientPlayNetworking.registerGlobalReceiver(GroupListPayload.TYPE, (payload, context) ->
             context.client().execute(() -> handleSnapshot(context.client(), payload))
@@ -45,9 +46,10 @@ public final class MasaToolClientImpl
         {
             activeHandler = handler;
             ClientGroupStore.clear();
-            ClientPortalLog.clear();
+            // Log history is client-local: only the per-connection subscription
+            // state is reset, so re-opening the GUI keeps earlier lines.
             ClientPortalLog.setEnabled(false);
-            ClientChunkLog.reset();
+            ClientChunkLog.resetConnection();
             retriesLeft = SNAPSHOT_MAX_RETRIES;
             retryTicks = 1;
         });
@@ -63,15 +65,16 @@ public final class MasaToolClientImpl
             activeHandler = null;
             retriesLeft = 0;
             retryTicks = 0;
+            ClientLogStore.save();
             ClientGroupStore.clear();
-            ClientPortalLog.clear();
             ClientPortalLog.setEnabled(false);
-            ClientChunkLog.reset();
+            ClientChunkLog.resetConnection();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->
         {
             VerifierGuiHook.onClientTick(client);
+            ClientLogStore.tick();
 
             if (retriesLeft <= 0 || ClientGroupStore.isConnected())
             {

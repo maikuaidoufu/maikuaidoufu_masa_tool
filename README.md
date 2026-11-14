@@ -97,6 +97,16 @@ Notes:
   rules. The permission mask is sent in the group snapshot (protocol v4), which
   means client and server must be updated together.
 
+## Client-side log cache
+
+The portal log and the chunk watcher each keep their most recent lines on the
+client (default 1000; adjustable in the General tab, range 100-10000). The
+history is written to `config/maikuaidoufu_masa_tool-logcache.json` with a
+short throttle, so re-opening the GUI or restarting the game keeps earlier
+lines. Only the rendered text is stored, so existing lines keep the language
+they were recorded in. Nothing is sent to the server, and the Clear buttons in
+both tabs erase the saved history as well.
+
 ## Build
 
 Requires JDK 25.

@@ -18,7 +18,6 @@ public final class ClientPortalLog
     public static final int KIND_LINK = 1;
     public static final int KIND_OTHER = 2;
 
-    private static final int MAX_ENTRIES = 500;
     private static final List<Entry> ENTRIES = new ArrayList<>();
 
     private static boolean enabled;
@@ -43,13 +42,9 @@ public final class ClientPortalLog
         }
 
         ENTRIES.add(new Entry(text, event.kind()));
-
-        while (ENTRIES.size() > MAX_ENTRIES)
-        {
-            ENTRIES.remove(0);
-        }
-
+        trimToLimit();
         revision++;
+        ClientLogStore.markDirty();
     }
 
     public static void clear()
@@ -58,6 +53,45 @@ public final class ClientPortalLog
         {
             ENTRIES.clear();
             revision++;
+            // Persist immediately so a manual clear survives a restart.
+            ClientLogStore.save();
+        }
+    }
+
+    /** Replaces the in-memory log with a previously saved snapshot. */
+    public static void restore(List<Entry> entries)
+    {
+        ENTRIES.clear();
+
+        if (entries != null)
+        {
+            ENTRIES.addAll(entries);
+        }
+
+        trimToLimit();
+        revision++;
+    }
+
+    /** Re-applies the configured cache size after the user changes it. */
+    public static void trim()
+    {
+        int before = ENTRIES.size();
+        trimToLimit();
+
+        if (ENTRIES.size() != before)
+        {
+            revision++;
+        }
+    }
+
+    private static void trimToLimit()
+    {
+        int limit = Configs.LOG_CACHE_SIZE.getIntegerValue();
+        int excess = ENTRIES.size() - limit;
+
+        if (excess > 0)
+        {
+            ENTRIES.subList(0, excess).clear();
         }
     }
 
